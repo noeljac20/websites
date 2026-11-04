@@ -10,9 +10,9 @@ export const site = {
   coach: "Declan",
   tagline: "Muay Thai coaching",
   gym: "The Headhunters Gym",
-  // TODO: confirm suburb / street address with Declan.
+  // TODO: confirm street address with Declan.
   // Fallback only. The booking flow, confirmation and manage pages show mt_settings.location (coach Settings tab).
-  location: "The Headhunters Gym, Melbourne",
+  location: "The Headhunters Gym, Pakenham",
   email: "", // Not shown. Instagram is the contact channel.
   phone: "", // TODO: e.g. "+61 4xx xxx xxx" to enable a tap-to-call link
   instagram: "https://instagram.com/declan.woods",
@@ -26,7 +26,7 @@ export const site = {
   cancelNote: "Cancel any time from the manage link on your confirmation page.",
   paymentNote: "Nothing is paid online. Payment is arranged with Declan.", // TODO: confirm payment method
   hero: {
-    eyebrow: "The Headhunters Gym, Melbourne",
+    eyebrow: "The Headhunters Gym, Pakenham",
     headline: ["Muay Thai coaching", "with Declan Woods"],
     sub: "1-on-1 sessions for adults and kids from age 7. Beginner and intermediate.",
   },
@@ -38,7 +38,14 @@ export const site = {
     eyebrow: "About",
     title: "Declan Woods",
     paragraphs: [
-      "Muay Thai competitor and coach at The Headhunters Gym, Melbourne. Gold medal at the 2026 Muay Thai Australia National Championships.", // TODO: confirm title wording / organisation / division
+      "Declan Woods is a Muay Thai competitor and coach at The Headhunters Gym in Pakenham, where he trains under world champion Ramesh Habib.", // TODO: confirm Ramesh Habib's title wording
+      "In 2026 he won gold at the Muay Thai Australia National Championships.", // TODO: confirm title wording / organisation / division
+    ],
+    /** Declan's own words, from his Instagram post. TODO: paste the exact caption here if it differs. */
+    fromInstagram: [
+      "1-on-1 personal training sessions at The Headhunters Gym, tailored to your experience level and individual goals.",
+      "Sessions focus on improving technique, pad work, fitness and building a strong foundation. Beginner and intermediate welcome.",
+      "1-on-1 Training: $40 for 1 hour. Kids Training (ages 7+): $30 for 45 minutes. Limited spots available.",
     ],
     highlights: [] as string[],
     podiumCaption: "Muay Thai Australia National Championships, 2026", // TODO: confirm wording
@@ -96,7 +103,7 @@ export const site = {
     title: "Questions",
     items: [
       { q: "I have never trained before. Is that a problem?", a: "No. Beginner and intermediate levels are both welcome." },
-      { q: "Where are the sessions?", a: "The Headhunters Gym, Melbourne." }, // TODO: gym address / suburb
+      { q: "Where are the sessions?", a: "The Headhunters Gym, Pakenham." }, // TODO: street address
       { q: "How do I pay?", a: "Nothing is paid online. Payment is arranged with Declan." }, // TODO: confirm payment method
       { q: "What if I need to cancel?", a: "Use the manage link on your confirmation page. Give as much notice as you can." },
       { q: "Do you train kids?", a: "Yes. Ages 7 and up, 45 minutes, $30. A parent or guardian makes the booking." }, // TODO: confirm kids policy

@@ -13,7 +13,7 @@ export function Footer() {
         <div>
           <Logo />
           <p className="mt-4 max-w-sm text-[15px] text-fog">
-            1-on-1 Muay Thai coaching with Declan Woods at The Headhunters Gym, Melbourne.
+            1-on-1 Muay Thai coaching with Declan Woods at The Headhunters Gym, Pakenham.
           </p>
           <Link to="/book" className="btn btn-primary mt-6">
             Book a session

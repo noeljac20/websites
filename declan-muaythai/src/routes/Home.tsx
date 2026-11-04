@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 
 export function HomePage() {
   useEffect(() => {
-    document.title = `${site.name}: Muay Thai coaching in Melbourne`;
+    document.title = `${site.name}: Muay Thai coaching in Pakenham`;
   }, []);
   return (
     // Bottom padding on phones matches the fixed book bar so it never covers the last footer row (Coach login).
@@ -219,6 +219,16 @@ function About() {
               <p key={p}>{p}</p>
             ))}
           </div>
+          {site.about.fromInstagram.length > 0 && (
+            <div className="mt-8 hairline-t pt-6">
+              <p className="label-caps mb-3">From Declan</p>
+              <div className="flex flex-col gap-3 text-[15px] leading-relaxed text-fog">
+                {site.about.fromInstagram.map((p) => (
+                  <p key={p}>{p}</p>
+                ))}
+              </div>
+            </div>
+          )}
           <ul className={cn("mt-8 grid gap-3 sm:grid-cols-2", site.about.highlights.length === 0 && "hidden")}>
             {site.about.highlights.map((h) => (
               <li key={h} className="card-2 flex items-center gap-3 px-4 py-3 text-[14px] text-cream">
