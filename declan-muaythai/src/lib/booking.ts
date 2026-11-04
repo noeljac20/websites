@@ -314,3 +314,22 @@ export async function coachUpsertSessionType(st: Partial<SessionType> & { slug: 
 export async function coachUpdateSettings(patch: Partial<Settings>) {
   return unwrap(await supabase.from("mt_settings").update(patch).eq("id", 1).select().single()) as Settings;
 }
+
+/* ---------- coach calendar feed ---------- */
+
+/** The coach's private calendar feed token (created on first use). */
+export async function coachFeedToken() {
+  return unwrap(await supabase.rpc("mt_coach_feed_token")) as string;
+}
+
+/** Issue a new feed token. Any calendar subscribed with the old link stops updating. */
+export async function coachResetFeedToken() {
+  return unwrap(await supabase.rpc("mt_coach_reset_feed_token")) as string;
+}
+
+export function calendarFeedUrls(token: string) {
+  const base = (import.meta.env.VITE_SUPABASE_URL as string).replace(/\/$/, "");
+  const https = `${base}/functions/v1/mt-calendar?token=${token}`;
+  const webcal = https.replace(/^https:/, "webcal:");
+  return { https, webcal, google: `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(webcal)}` };
+}

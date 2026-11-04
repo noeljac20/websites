@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /coach
+Disallow: /booking/
+
+Sitemap: https://websites-psi-nine.vercel.app/sitemap.xml

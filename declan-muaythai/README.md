@@ -42,6 +42,8 @@ Bookings and client records are only readable by the coach account.
 5. In **Availability**, adjust the weekly windows (defaults: Mon to Fri 6 to 9am and 4 to 8pm, Sat 8am to 12pm. These are placeholders; set Declan's real hours before launch).
 6. In **Services**, check the two services match Declan's offer: **1-on-1 Training** (`private-1on1`, 60 min, $40) and **Kids Training** (`kids-training`, ages 7+, 45 min, $30, flagged `for_kids`). There are no packs or partner sessions; don't add any without Declan's say-so.
 7. The service copy and gym location in the database match `FALLBACK_SESSION_TYPES` in `src/lib/booking.ts` (migration `20261104230000_service_copy_and_location.sql`). Edit them in the **Services** and **Settings** tabs if they change.
+8. In **Settings**, under **Bookings in your phone calendar**, tap **iPhone or Mac calendar** (or **Google Calendar**) once. New requests and confirmed sessions then appear in his phone calendar automatically, marked *Request* until confirmed. Phones refresh subscribed calendars on their own schedule (iPhone usually within the hour; Google Calendar can take several hours and must be subscribed once from a computer), so this is a convenience, not an instant alert. **Make a new link** revokes the old one.
+9. To use the dashboard like an app, open `/coach` on his phone and choose **Add to Home Screen**.
 
 ## Content to confirm before launch
 
@@ -63,7 +65,18 @@ It is a static single-page app. Deploy `dist/` to Vercel, Netlify or Cloudflare 
 
 Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` as environment variables on the host (same values as `.env`).
 
+## Coach calendar feed
+
+- `supabase/migrations/20261105010000_coach_calendar_feed.sql`: `mt_coach_secrets` (one row, no client access), `mt_coach_feed_token()` and `mt_coach_reset_feed_token()` (coach only), and `mt_calendar_feed(token)` (returns pending, confirmed and completed bookings from 90 days back to 400 days ahead when the token matches; widened in `20261105020000_calendar_feed_range.sql`).
+- `supabase/functions/mt-calendar/`: Supabase Edge Function deployed with `verify_jwt = false`, because calendar apps cannot send auth headers. The long random token is the credential. Feed URL: `https://<project>.supabase.co/functions/v1/mt-calendar?token=<token>`. `ics.ts` is a pure builder and can be tested with bun.
+- If the site moves to a custom domain, update `DASHBOARD_URL` in `supabase/functions/mt-calendar/index.ts` and redeploy, and update the canonical, `og:url`, `og:image`, JSON-LD, `robots.txt` and `sitemap.xml` URLs.
+
+## Search and sharing
+
+- `index.html` carries a schema.org `Service` description (Declan, The Headhunters Gym address, both prices) that Google can read, plus a 1200x630 share image (`public/images/og.jpg`).
+- `public/robots.txt` keeps `/coach` and private booking links out of search; `public/sitemap.xml` lists the public pages. Submit the sitemap in Google Search Console once the final domain is set.
+
 ## Not included yet
 
-- Email / SMS notifications to Declan or the client (needs an email provider such as Resend). The dashboard has a Copy confirmation message button in the meantime, and the public copy says the manage link is shown on the confirmation page rather than emailed.
+- Email / SMS notifications to Declan or the client (needs an email provider such as Resend). In the meantime Declan can subscribe to the calendar feed above, the dashboard has a Copy confirmation message button, and the public copy says the manage link is shown on the confirmation page rather than emailed.
 - Online payment. Payment is arranged directly with Declan; Stripe can be added later.

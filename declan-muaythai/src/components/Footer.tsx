@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Instagram, MapPin } from "lucide-react";
 import { Logo } from "./Logo";
@@ -39,6 +40,7 @@ export function Footer() {
               </li>
             )}
           </ul>
+          <MapCard />
         </div>
         <div>
           <p className="label-caps mb-4">Site</p>
@@ -67,5 +69,40 @@ export function Footer() {
         </div>
       </div>
     </footer>
+  );
+}
+
+/**
+ * Small dark map of the gym. The iframe is decorative and inert; a transparent link on top opens directions.
+ * The label underneath stays visible until the map has loaded.
+ */
+function MapCard() {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div className="relative mt-5 overflow-hidden rounded-xl border border-line bg-ink-2">
+      <span className="absolute inset-0 grid place-items-center text-[13px] text-mute" aria-hidden>
+        <span className="flex items-center gap-2">
+          <MapPin className="size-4" /> Open in Google Maps
+        </span>
+      </span>
+      <iframe
+        title="Map of The Headhunters Gym, 3 Pottery Cct, Pakenham"
+        src={site.mapEmbedUrl}
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+        tabIndex={-1}
+        aria-hidden="true"
+        inert
+        onLoad={() => setLoaded(true)}
+        className={`pointer-events-none relative block aspect-[16/10] w-full border-0 transition-opacity duration-500 [filter:invert(0.9)_hue-rotate(180deg)_saturate(0.6)_brightness(0.95)] ${loaded ? "opacity-100" : "opacity-0"}`}
+      />
+      <a
+        href={site.mapsUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="absolute inset-0 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold"
+        aria-label="Open in Google Maps: directions to The Headhunters Gym"
+      />
+    </div>
   );
 }

@@ -14,6 +14,7 @@ export const site = {
   location: "The Headhunters Gym, 3 Pottery Cct, Pakenham VIC 3810",
   address: "3 Pottery Cct, Pakenham VIC 3810",
   mapsUrl: "https://www.google.com/maps/search/?api=1&query=The+Headhunters+Gym+3+Pottery+Cct+Pakenham+VIC+3810",
+  mapEmbedUrl: "https://www.google.com/maps?q=3+Pottery+Cct,+Pakenham+VIC+3810&z=15&output=embed",
   email: "", // Not shown. Instagram is the contact channel.
   phone: "", // TODO: e.g. "+61 4xx xxx xxx" to enable a tap-to-call link
   instagram: "https://instagram.com/declan_woodss",
@@ -28,7 +29,7 @@ export const site = {
   paymentNote: "Nothing is paid online. Payment is arranged with Declan.", // TODO: confirm payment method
   hero: {
     eyebrow: "The Headhunters Gym, Pakenham",
-    headline: ["Muay Thai coaching", "with Declan Woods"],
+    headline: ["Muay Thai and kickboxing", "with Declan Woods"],
     sub: "1-on-1 sessions for adults and kids from age 7. Beginner and intermediate.",
   },
   stats: [

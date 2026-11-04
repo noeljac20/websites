@@ -127,6 +127,11 @@ export function googleCalendarUrl(opts: { title: string; start: string; end: str
   return `https://calendar.google.com/calendar/render?${p.toString()}`;
 }
 
+/** RFC 5545 text escaping (commas, semicolons, backslashes and newlines). */
+function icsText(v: string) {
+  return v.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+}
+
 export function icsFile(opts: { title: string; start: string; end: string; details?: string; location?: string; uid: string }) {
   const lines = [
     "BEGIN:VCALENDAR",
@@ -137,9 +142,9 @@ export function icsFile(opts: { title: string; start: string; end: string; detai
     `DTSTAMP:${icsStamp(new Date().toISOString())}`,
     `DTSTART:${icsStamp(opts.start)}`,
     `DTEND:${icsStamp(opts.end)}`,
-    `SUMMARY:${opts.title}`,
-    `DESCRIPTION:${(opts.details ?? "").replace(/\n/g, "\\n")}`,
-    `LOCATION:${opts.location ?? ""}`,
+    `SUMMARY:${icsText(opts.title)}`,
+    `DESCRIPTION:${icsText(opts.details ?? "")}`,
+    `LOCATION:${icsText(opts.location ?? "")}`,
     "END:VEVENT",
     "END:VCALENDAR",
   ];

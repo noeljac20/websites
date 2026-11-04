@@ -4,6 +4,7 @@ import { Button, Field, Input, Select, Switch } from "@/components/ui";
 import { coachUpdateSettings, type Settings } from "@/lib/booking";
 import { errorMessage } from "@/lib/utils";
 import { PageHeader } from "./shared";
+import { CalendarFeed } from "./CalendarFeed";
 
 const ZONES = ["Australia/Melbourne", "Australia/Sydney", "Australia/Brisbane", "Australia/Adelaide", "Australia/Perth", "Australia/Hobart", "Australia/Darwin", "Pacific/Auckland"];
 
@@ -38,7 +39,7 @@ export function SettingsPanel({ settings, onSaved }: { settings: Settings; onSav
     <>
       <PageHeader title="Settings" sub="How the booking calendar behaves." />
       <form onSubmit={save} className="card grid max-w-2xl gap-5 p-5 sm:grid-cols-2 sm:p-7">
-        <Field id="st-loc" label="Location shown to clients" hint="Gym name and suburb. Shown to clients on the booking and confirmation pages.">
+        <Field id="st-loc" label="Location shown to clients" hint="Gym name and address. Shown to clients on the booking and confirmation pages.">
           <Input id="st-loc" value={f.location} onChange={(e) => up("location", e.target.value)} />
         </Field>
         <Field id="st-tz" label="Timezone">
@@ -87,6 +88,7 @@ export function SettingsPanel({ settings, onSaved }: { settings: Settings; onSav
           </Button>
         </div>
       </form>
+      <CalendarFeed />
     </>
   );
 }
