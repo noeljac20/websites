@@ -41,11 +41,14 @@ export const site = {
       "Declan Woods is a Muay Thai competitor and coach at The Headhunters Gym in Pakenham, where he trains under world champion Ramesh Habib.", // TODO: confirm Ramesh Habib's title wording
       "In 2026 he won gold at the Muay Thai Australia National Championships.", // TODO: confirm title wording / organisation / division
     ],
-    /** Declan's own words, from his Instagram post. TODO: paste the exact caption here if it differs. */
+    /** Declan's own words, from his Instagram post (emojis removed, "your" corrected to "you're"). */
     fromInstagram: [
-      "1-on-1 personal training sessions at The Headhunters Gym, tailored to your experience level and individual goals.",
-      "Sessions focus on improving technique, pad work, fitness and building a strong foundation. Beginner and intermediate welcome.",
-      "1-on-1 Training: $40 for 1 hour. Kids Training (ages 7+): $30 for 45 minutes. Limited spots available.",
+      "If you're looking to improve your skills, build confidence or get started in the sport, then this is for you.",
+      "I offer 1-on-1 personal training sessions at The Headhunters Gym, with training tailored to your experience level and individual goals.",
+      "Sessions focus on improving technique, pad work, fitness and building a strong foundation.",
+      "Whether you're completely new or looking to sharpen your skills, all beginner and intermediate levels are welcome!",
+      "1-on-1 Training: $40 (1 hour). Kids Training (Ages 7+): $30 (45 mins).",
+      "DM me @declan.woods to book a session or for any questions! Limited spots available.",
     ],
     highlights: [] as string[],
     podiumCaption: "Muay Thai Australia National Championships, 2026", // TODO: confirm wording

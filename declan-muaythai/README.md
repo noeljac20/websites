@@ -53,7 +53,6 @@ Editable copy lives in `src/lib/site.ts`. Facts taken from Declan's Instagram po
 - the gym's street address (only "The Headhunters Gym, Pakenham" is known)
 - the exact wording of the 2026 championship title and division
 - the wording of Ramesh Habib's world title
-- the exact Instagram caption (the about section paraphrases it; edit `about.fromInstagram` in `src/lib/site.ts`)
 - how he prefers to be paid (the site only says nothing is paid online and payment is arranged directly with Declan)
 
 ## Deploy
