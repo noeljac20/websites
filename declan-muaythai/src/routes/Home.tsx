@@ -39,19 +39,25 @@ export function HomePage() {
 function Hero() {
   return (
     <section className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-ink">
-      <picture className="absolute inset-0 -z-10">
+      {/* Phones: photo across the top, text below it. Tablet and up: full-bleed photo behind the text. */}
+      <div className="absolute inset-x-0 top-0 -z-10 h-[62svh] overflow-hidden md:inset-0 md:h-auto">
+      <picture className="absolute inset-0">
+        {/* Phones get the portrait bag photo; the wide kick photo crops to just a leg on a tall screen. */}
+        <source media="(max-width: 767px)" srcSet="/images/declan-bag.webp" type="image/webp" />
+        <source media="(max-width: 767px)" srcSet="/images/declan-bag.jpg" type="image/jpeg" />
         <source srcSet="/images/declan-kick.webp" type="image/webp" />
         <img
           src="/images/declan-kick.jpg"
-          alt="Declan landing a high kick during a Muay Thai bout"
-          className="h-full w-full object-cover object-[62%_30%] motion-safe:animate-drift"
+          alt="Declan training at The Headhunters Gym"
+          className="h-full w-full object-cover object-[60%_20%] motion-safe:animate-drift md:object-[62%_30%]"
           fetchPriority="high"
         />
       </picture>
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(10,10,11,0.75)_0%,rgba(10,10,11,0.15)_38%,rgba(10,10,11,0.55)_68%,#0a0a0b_100%)]" />
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(10,10,11,0.7)_0%,rgba(10,10,11,0)_60%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,10,11,0.55)_0%,rgba(10,10,11,0)_28%,rgba(10,10,11,0.2)_60%,#0a0a0b_100%)] md:bg-[linear-gradient(180deg,rgba(10,10,11,0.75)_0%,rgba(10,10,11,0.15)_38%,rgba(10,10,11,0.55)_68%,#0a0a0b_100%)]" />
+      <div className="absolute inset-0 hidden bg-[linear-gradient(90deg,rgba(10,10,11,0.7)_0%,rgba(10,10,11,0)_60%)] md:block" />
+      </div>
 
-      <div className="mx-auto mt-auto w-full max-w-6xl px-4 pb-10 pt-32 sm:px-6 sm:pb-16">
+      <div className="mx-auto mt-auto w-full max-w-6xl px-4 pb-10 pt-[46svh] sm:px-6 sm:pb-16 md:pt-32">
         <div className="max-w-3xl">
           <p className="eyebrow animate-rise mb-5 flex items-center gap-3">
             <span className="h-px w-8 bg-gold" /> {site.hero.eyebrow}
@@ -328,7 +334,7 @@ function Faq() {
           <Photo
             src="declan-bag"
             alt="Declan working the heavy bag at The Headhunters Gym"
-            className="mt-8 aspect-[4/3] object-[50%_30%] lg:aspect-[4/5]"
+            className="mt-8 hidden aspect-[4/5] object-[50%_25%] lg:block"
           />
         </Reveal>
         <Reveal delay={100} className="flex flex-col">

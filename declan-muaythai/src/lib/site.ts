@@ -32,8 +32,8 @@ export const site = {
     sub: "1-on-1 sessions for adults and kids from age 7. Beginner and intermediate.",
   },
   stats: [
-    { value: "$40", label: "1-on-1 Training, 1 hour" },
-    { value: "$30", label: "Kids Training, 45 minutes" },
+    { value: "$40", label: "1-on-1, 1 hour" },
+    { value: "$30", label: "Kids, 45 min" },
   ],
   about: {
     eyebrow: "About",
