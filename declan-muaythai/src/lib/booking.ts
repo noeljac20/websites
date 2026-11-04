@@ -99,7 +99,7 @@ export const DEFAULT_SETTINGS: Settings = {
   max_advance_days: 42,
   buffer_min: 0,
   auto_confirm: false,
-  location: "The Headhunters Gym, Pakenham",
+  location: "The Headhunters Gym, 3 Pottery Cct, Pakenham VIC 3810",
 };
 
 /** Static fallback so the pricing section still renders if the database is unreachable. Mirrors the two real services. */

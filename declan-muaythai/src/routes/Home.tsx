@@ -110,16 +110,27 @@ function SportSection() {
   return (
     <section id="muay-thai" className="scroll-mt-20 py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <Reveal>
-          <SectionHeading eyebrow={site.sport.eyebrow} title={site.sport.title} />
-        </Reveal>
-        <div className="mt-12 grid gap-4 md:grid-cols-2">
-          {site.sport.items.map((s, i) => (
-            <Reveal key={s.title} delay={i * 90} className="card p-7">
-              <h3 className="display-md text-[22px] text-cream">{s.title}</h3>
-              <p className="mt-3 text-[15px] leading-relaxed text-fog">{s.body}</p>
+        <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-12">
+          <div>
+            <Reveal>
+              <SectionHeading eyebrow={site.sport.eyebrow} title={site.sport.title} />
             </Reveal>
-          ))}
+            <div className="mt-10 flex flex-col gap-4">
+              {site.sport.items.map((s, i) => (
+                <Reveal key={s.title} delay={i * 90} className="card p-7">
+                  <h3 className="display-md text-[22px] text-cream">{s.title}</h3>
+                  <p className="mt-3 text-[15px] leading-relaxed text-fog">{s.body}</p>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+          <Reveal delay={120}>
+            <Photo
+              src="declan-ring"
+              alt="Declan with training partners beside the ring at the gym"
+              className="aspect-square object-[50%_60%]"
+            />
+          </Reveal>
         </div>
       </div>
     </section>
@@ -314,6 +325,11 @@ function Faq() {
       <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_1.4fr]">
         <Reveal>
           <SectionHeading eyebrow={site.faq.eyebrow} title={site.faq.title} />
+          <Photo
+            src="declan-bag"
+            alt="Declan working the heavy bag at The Headhunters Gym"
+            className="mt-8 aspect-[4/3] object-[50%_30%] lg:aspect-[4/5]"
+          />
         </Reveal>
         <Reveal delay={100} className="flex flex-col">
           {site.faq.items.map((f) => (
@@ -372,5 +388,15 @@ function MobileBookBar() {
         Book a session
       </Link>
     </div>
+  );
+}
+
+/* ================================================================ PHOTO */
+function Photo({ src, alt, className }: { src: string; alt: string; className?: string }) {
+  return (
+    <picture>
+      <source srcSet={`/images/${src}.webp`} type="image/webp" />
+      <img src={`/images/${src}.jpg`} alt={alt} loading="lazy" className={cn("w-full rounded-2xl object-cover", className)} />
+    </picture>
   );
 }

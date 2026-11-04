@@ -10,9 +10,10 @@ export const site = {
   coach: "Declan",
   tagline: "Muay Thai coaching",
   gym: "The Headhunters Gym",
-  // TODO: confirm street address with Declan.
   // Fallback only. The booking flow, confirmation and manage pages show mt_settings.location (coach Settings tab).
-  location: "The Headhunters Gym, Pakenham",
+  location: "The Headhunters Gym, 3 Pottery Cct, Pakenham VIC 3810",
+  address: "3 Pottery Cct, Pakenham VIC 3810",
+  mapsUrl: "https://www.google.com/maps/search/?api=1&query=The+Headhunters+Gym+3+Pottery+Cct+Pakenham+VIC+3810",
   email: "", // Not shown. Instagram is the contact channel.
   phone: "", // TODO: e.g. "+61 4xx xxx xxx" to enable a tap-to-call link
   instagram: "https://instagram.com/declan_woodss",
@@ -106,7 +107,7 @@ export const site = {
     title: "Questions",
     items: [
       { q: "I have never trained before. Is that a problem?", a: "No. Beginner and intermediate levels are both welcome." },
-      { q: "Where are the sessions?", a: "The Headhunters Gym, Pakenham." }, // TODO: street address
+      { q: "Where are the sessions?", a: "The Headhunters Gym, 3 Pottery Cct, Pakenham VIC 3810." },
       { q: "How do I pay?", a: "Nothing is paid online. Payment is arranged with Declan." }, // TODO: confirm payment method
       { q: "What if I need to cancel?", a: "Use the manage link on your confirmation page. Give as much notice as you can." },
       { q: "Do you train kids?", a: "Yes. Ages 7 and up, 45 minutes, $30. A parent or guardian makes the booking." }, // TODO: confirm kids policy

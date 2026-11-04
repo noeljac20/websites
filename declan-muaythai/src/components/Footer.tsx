@@ -22,8 +22,13 @@ export function Footer() {
         <div>
           <p className="label-caps mb-4">Contact</p>
           <ul className="flex flex-col gap-3 text-[15px] text-fog">
-            <li className="flex items-center gap-2.5">
-              <MapPin className="size-4 text-mute" /> {site.location}
+            <li className="flex items-start gap-2.5">
+              <MapPin className="mt-1 size-4 shrink-0 text-mute" />
+              <a href={site.mapsUrl} target="_blank" rel="noreferrer" className="hover:text-cream">
+                {site.gym}
+                <br />
+                {site.address}
+              </a>
             </li>
             {site.instagram && (
               <li className="flex items-center gap-2.5">

@@ -38,7 +38,7 @@ Bookings and client records are only readable by the coach account.
 1. Open `/coach/login`. Because no coach exists yet, the page offers **Create coach account**.
 2. Sign up with Declan's email and a password. The first account created becomes the coach (nobody else can claim it afterwards).
 3. If Supabase email confirmation is on, confirm the email, then sign in.
-4. In **Settings**, set the gym location (shown on the booking, confirmation and manage pages), timezone, slot interval, notice period and whether bookings auto-confirm. The live value is currently `The Headhunters Gym`; set it to `The Headhunters Gym, Pakenham` so it matches the public site (the suburb or street address still needs confirming with Declan).
+4. In **Settings**, set the gym location (shown on the booking, confirmation and manage pages), timezone, slot interval, notice period and whether bookings auto-confirm. The live value is `The Headhunters Gym, 3 Pottery Cct, Pakenham VIC 3810`.
 5. In **Availability**, adjust the weekly windows (defaults: Mon to Fri 6 to 9am and 4 to 8pm, Sat 8am to 12pm. These are placeholders; set Declan's real hours before launch).
 6. In **Services**, check the two services match Declan's offer: **1-on-1 Training** (`private-1on1`, 60 min, $40) and **Kids Training** (`kids-training`, ages 7+, 45 min, $30, flagged `for_kids`). There are no packs or partner sessions; don't add any without Declan's say-so.
 7. The service copy and gym location in the database match `FALLBACK_SESSION_TYPES` in `src/lib/booking.ts` (migration `20261104230000_service_copy_and_location.sql`). Edit them in the **Services** and **Settings** tabs if they change.
@@ -50,7 +50,6 @@ Bookings and client records are only readable by the coach account.
 Editable copy lives in `src/lib/site.ts`. Facts taken from Declan's Instagram post (@declan_woodss, https://instagram.com/declan_woodss) are already in: The Headhunters Gym, $40 / 1 hour 1-on-1, $30 / 45 min kids (ages 7+), beginner and intermediate welcome, limited spots. The copy is written to be plain and professional: sentence case, no exclamation marks, and no quotations or testimonials anywhere on the site (keep it that way when editing). Items marked `TODO` still need Declan's input:
 
 - contact email and phone
-- the gym's street address (only "The Headhunters Gym, Pakenham" is known)
 - the exact wording of the 2026 championship title and division
 - the wording of Ramesh Habib's world title
 - how he prefers to be paid (the site only says nothing is paid online and payment is arranged directly with Declan)
