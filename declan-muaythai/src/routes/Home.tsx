@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 
 export function HomePage() {
   useEffect(() => {
-    document.title = `${site.name}: Muay Thai coaching in Pakenham`;
+    document.title = "Declan Woods | Muay Thai and kickboxing coaching in Pakenham";
   }, []);
   return (
     // Bottom padding on phones matches the fixed book bar so it never covers the last footer row (Coach login).

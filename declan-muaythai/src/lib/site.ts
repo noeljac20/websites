@@ -6,7 +6,7 @@
  * No exclamation marks, no quotations, no slogans.
  */
 export const site = {
-  name: "Declan Muay Thai",
+  name: "Declan Woods Muay Thai / Kickboxing",
   coach: "Declan",
   tagline: "Muay Thai coaching",
   gym: "The Headhunters Gym",

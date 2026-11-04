@@ -131,7 +131,7 @@ export function icsFile(opts: { title: string; start: string; end: string; detai
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Declan Muay Thai//Booking//EN",
+    "PRODID:-//Declan Woods Muay Thai Kickboxing//Booking//EN",
     "BEGIN:VEVENT",
     `UID:${opts.uid}`,
     `DTSTAMP:${icsStamp(new Date().toISOString())}`,
