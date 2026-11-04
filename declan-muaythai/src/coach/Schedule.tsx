@@ -12,11 +12,19 @@ import {
   type SessionType,
   type Settings,
 } from "@/lib/booking";
-import { fmtDayString, fmtMoney, fmtRange, fmtTime, localDay, todayLocal } from "@/lib/format";
+import { fmtDate, fmtDayString, fmtMoney, fmtRange, fmtTime, localDay, todayLocal } from "@/lib/format";
 import { cn, errorMessage } from "@/lib/utils";
 import { ContactLinks, PageHeader, StatusBadge, confirmationText, experienceLabel, useLoad } from "./shared";
 
 type Filter = "upcoming" | "past" | "cancelled";
+const FILTER_LABEL: Record<Filter, string> = { upcoming: "Upcoming", past: "Past", cancelled: "Cancelled" };
+const STATUS_TOAST: Record<BookingStatus, string> = {
+  pending: "Marked as pending.",
+  confirmed: "Booking confirmed.",
+  completed: "Marked as completed.",
+  cancelled: "Booking cancelled.",
+  no_show: "Marked as no-show.",
+};
 
 export function Schedule({ settings }: { settings: Settings }) {
   const tz = settings.timezone;
@@ -48,44 +56,49 @@ export function Schedule({ settings }: { settings: Settings }) {
     <>
       <PageHeader
         title="Schedule"
-        sub="Confirm requests, mark sessions done, add walk-ins."
+        sub="Confirm requests, mark sessions as completed and add bookings made directly with you."
         action={
           <Button onClick={() => setAddOpen(true)} size="sm">
             <Plus className="size-4" /> Add booking
           </Button>
         }
       />
-      <div className="mb-5 flex gap-1 rounded-md bg-surface-2 p-1" role="tablist">
+      <div className="mb-5 flex gap-1 rounded-md bg-surface-2 p-1" role="group" aria-label="Show bookings">
         {(["upcoming", "past", "cancelled"] as Filter[]).map((f) => (
           <button
             key={f}
-            role="tab"
-            aria-selected={filter === f}
+            type="button"
+            aria-pressed={filter === f}
             onClick={() => setFilter(f)}
             className={cn(
-              "flex-1 rounded px-3 py-2 font-display text-[14px] font-600 uppercase tracking-[0.12em] transition-colors",
+              "min-h-11 flex-1 rounded px-3 py-2 font-display text-[15px] font-600 transition-colors",
               filter === f ? "bg-surface-3 text-cream" : "text-mute hover:text-fog",
             )}
           >
-            {f}
+            {FILTER_LABEL[f]}
           </button>
         ))}
       </div>
 
       {all.loading && !all.data && (
         <div className="flex items-center gap-3 text-fog">
-          <Spinner /> Loading…
+          <Spinner /> Loading
         </div>
       )}
       {all.error && <p className="text-[#ff7a7f]">{all.error}</p>}
-      {all.data && list.length === 0 && <EmptyState title={`No ${filter} bookings`} body={filter === "upcoming" ? "New requests from the website will show up here." : undefined} />}
+      {all.data && list.length === 0 && (
+        <EmptyState
+          title={filter === "upcoming" ? "No upcoming bookings." : filter === "past" ? "No past bookings." : "No cancelled bookings."}
+          body={filter === "upcoming" ? "New requests from the website will appear here." : undefined}
+        />
+      )}
 
       <div className="flex flex-col gap-7">
         {list.map(([day, rows]) => (
           <section key={day}>
             <h2 className="mb-2 flex items-baseline gap-2">
               <span className="display-md text-[17px] text-cream">{fmtDayString(day, { weekday: "long", day: "numeric", month: "short" })}</span>
-              {day === today && <span className="rounded-full bg-gold-soft px-2 py-0.5 font-display text-[11px] font-700 uppercase tracking-[0.14em] text-gold">Today</span>}
+              {day === today && <span className="rounded-full bg-gold-soft px-2 py-0.5 font-display text-[12px] font-700 text-gold">Today</span>}
             </h2>
             <ul className="flex flex-col gap-2">
               {rows.map((b) => (
@@ -96,7 +109,8 @@ export function Schedule({ settings }: { settings: Settings }) {
         ))}
       </div>
 
-      <AddBookingDialog open={addOpen} onOpenChange={setAddOpen} tz={tz} onCreated={all.reload} />
+      {/* Mounted only while open so each use starts with a fresh form and today's date. */}
+      {addOpen && <AddBookingDialog open onOpenChange={setAddOpen} tz={tz} onCreated={all.reload} />}
     </>
   );
 }
@@ -106,12 +120,19 @@ export function BookingRow({ booking: b, tz, onChange }: { booking: Booking; tz:
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
   const [notes, setNotes] = useState(b.coach_notes ?? "");
+  const [cancelOpen, setCancelOpen] = useState(false);
 
   async function setStatus(status: BookingStatus) {
     setBusy(status);
     try {
-      await coachUpdateBooking(b.id, status === "cancelled" ? { status, cancelled_by: "coach", cancelled_at: new Date().toISOString() } : { status });
-      toast.success(`Marked ${status.replace("_", "-")}.`);
+      // Reinstating or undoing clears any earlier cancellation stamp so a live booking never carries stale metadata.
+      const patch: Partial<Booking> =
+        status === "cancelled"
+          ? { status, cancelled_by: "coach", cancelled_at: new Date().toISOString() }
+          : { status, cancelled_by: null, cancelled_at: null };
+      await coachUpdateBooking(b.id, patch);
+      toast.success(STATUS_TOAST[status]);
+      setCancelOpen(false);
       onChange();
     } catch (e) {
       toast.error(errorMessage(e));
@@ -137,10 +158,11 @@ export function BookingRow({ booking: b, tz, onChange }: { booking: Booking; tz:
     navigator.clipboard
       .writeText(confirmationText(b, tz))
       .then(() => toast.success("Confirmation message copied."))
-      .catch(() => toast.error("Couldn't copy."));
+      .catch(() => toast.error("The message could not be copied."));
   }
 
   const past = new Date(b.ends_at).getTime() < Date.now();
+  const { child, rest } = splitChildNote(b.notes);
 
   return (
     <li className={cn("card-2 overflow-hidden", b.status === "pending" && "border-amber/40")}>
@@ -162,11 +184,12 @@ export function BookingRow({ booking: b, tz, onChange }: { booking: Booking; tz:
           <div className="flex flex-col gap-3 text-[14px]">
             <Row k="Time" v={fmtRange(b.starts_at, b.ends_at, tz)} />
             <Row k="Email" v={b.client_email} />
-            <Row k="Phone" v={b.client_phone ?? "—"} />
+            <Row k="Phone" v={b.client_phone ?? "Not given"} />
             <Row k="Experience" v={experienceLabel(b.experience)} />
             {b.goals && <Row k="Goals" v={b.goals} />}
-            {b.notes && <Row k="Notes" v={b.notes} />}
-            <Row k="Requested" v={new Date(b.created_at).toLocaleString("en-AU", { timeZone: tz, dateStyle: "medium", timeStyle: "short" })} />
+            {child && <Row k="Child" v={child} />}
+            {rest && <Row k="Notes" v={rest} />}
+            <Row k="Requested" v={`${fmtDate(b.created_at, tz, { year: "numeric" })}, ${fmtTime(b.created_at, tz)}`} />
             <ContactLinks email={b.client_email} phone={b.client_phone} name={b.client_name} />
           </div>
 
@@ -174,45 +197,63 @@ export function BookingRow({ booking: b, tz, onChange }: { booking: Booking; tz:
             <div className="flex flex-wrap gap-2">
               {b.status === "pending" && (
                 <Button size="sm" loading={busy === "confirmed"} onClick={() => setStatus("confirmed")}>
-                  <Check className="size-4" /> Confirm
+                  <Check className="size-4" aria-hidden /> Confirm booking
                 </Button>
               )}
               {(b.status === "confirmed" || b.status === "pending") && past && (
                 <Button size="sm" variant="gold" loading={busy === "completed"} onClick={() => setStatus("completed")}>
-                  Mark completed
+                  Mark as completed
                 </Button>
               )}
               {(b.status === "confirmed" || b.status === "pending") && past && (
                 <Button size="sm" variant="soft" loading={busy === "no_show"} onClick={() => setStatus("no_show")}>
-                  No-show
-                </Button>
-              )}
-              {(b.status === "confirmed" || b.status === "pending") && (
-                <Button size="sm" variant="danger" loading={busy === "cancelled"} onClick={() => setStatus("cancelled")}>
-                  <X className="size-4" /> Cancel
+                  Mark as no-show
                 </Button>
               )}
               {b.status === "cancelled" && !past && (
                 <Button size="sm" variant="soft" loading={busy === "confirmed"} onClick={() => setStatus("confirmed")}>
-                  Reinstate
+                  Reinstate booking
                 </Button>
               )}
               {(b.status === "completed" || b.status === "no_show") && (
                 <Button size="sm" variant="soft" loading={busy === "confirmed"} onClick={() => setStatus("confirmed")}>
-                  Undo
+                  {b.status === "completed" ? "Undo completed" : "Undo no-show"}
                 </Button>
               )}
               {b.status === "confirmed" && !past && (
                 <Button size="sm" variant="soft" onClick={copyConfirmation}>
-                  <Copy className="size-4" /> Copy confirmation text
+                  <Copy className="size-4" aria-hidden /> Copy confirmation message
                 </Button>
               )}
             </div>
+            {/* Cancelling is kept on its own line, away from the status actions, and asks first. */}
+            {(b.status === "confirmed" || b.status === "pending") && (
+              <div>
+                <Button size="sm" variant="danger" onClick={() => setCancelOpen(true)}>
+                  <X className="size-4" aria-hidden /> Cancel booking
+                </Button>
+                <Dialog
+                  open={cancelOpen}
+                  onOpenChange={setCancelOpen}
+                  title="Cancel this booking?"
+                  description={`${b.client_name}, ${fmtDayString(localDay(b.starts_at, tz))} at ${fmtTime(b.starts_at, tz)}. The time will open up for someone else. No message is sent to the client.`}
+                >
+                  <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                    <Button variant="ghost" onClick={() => setCancelOpen(false)}>
+                      Keep booking
+                    </Button>
+                    <Button variant="danger" loading={busy === "cancelled"} onClick={() => setStatus("cancelled")}>
+                      Cancel booking
+                    </Button>
+                  </div>
+                </Dialog>
+              </div>
+            )}
             <div>
-              <label htmlFor={`notes-${b.id}`} className="label-caps">
-                Session notes (private)
+              <label htmlFor={`notes-${b.id}`} className="text-[14px] font-semibold text-cream">
+                Session notes <span className="font-medium text-mute">(only you can see these)</span>
               </label>
-              <Textarea id={`notes-${b.id}`} value={notes} onChange={(e) => setNotes(e.target.value)} className="mt-1.5 min-h-[90px] field-sm" placeholder="What you worked on, what to do next time…" />
+              <Textarea id={`notes-${b.id}`} value={notes} onChange={(e) => setNotes(e.target.value)} className="mt-1.5 min-h-[90px] field-sm" placeholder="What you worked on and what to cover next time." />
               <div className="mt-2 flex justify-end">
                 <Button size="sm" variant="soft" loading={busy === "notes"} onClick={saveNotes} disabled={notes === (b.coach_notes ?? "")}>
                   Save notes
@@ -226,6 +267,15 @@ export function BookingRow({ booking: b, tz, onChange }: { booking: Booking; tz:
   );
 }
 
+/** Kids bookings carry the child's name/age as a leading "Child: …" line in notes (the RPC has no dedicated column). */
+function splitChildNote(notes: string | null): { child: string | null; rest: string | null } {
+  if (!notes) return { child: null, rest: null };
+  const m = /^Child:\s*(.*)$/m.exec(notes.trimStart().split("\n")[0]);
+  if (!m) return { child: null, rest: notes };
+  const rest = notes.trimStart().split("\n").slice(1).join("\n").trim();
+  return { child: m[1].trim() || null, rest: rest || null };
+}
+
 function Row({ k, v }: { k: string; v: string }) {
   return (
     <div className="flex gap-3">
@@ -236,9 +286,20 @@ function Row({ k, v }: { k: string; v: string }) {
 }
 
 /* ---------------------------------------------------------------- add dialog */
+const initialAddForm = (tz: string) => ({
+  name: "",
+  email: "",
+  phone: "",
+  typeId: "",
+  day: todayLocal(tz),
+  time: "17:00",
+  status: "confirmed" as BookingStatus,
+  notes: "",
+});
+
 function AddBookingDialog({ open, onOpenChange, tz, onCreated }: { open: boolean; onOpenChange: (o: boolean) => void; tz: string; onCreated: () => void }) {
   const types = useLoad(() => fetchSessionTypes(true), []);
-  const [form, setForm] = useState({ name: "", email: "", phone: "", typeId: "", day: todayLocal(tz), time: "17:00", status: "confirmed" as BookingStatus, notes: "" });
+  const [form, setForm] = useState(() => initialAddForm(tz));
   const [busy, setBusy] = useState(false);
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
@@ -249,7 +310,7 @@ function AddBookingDialog({ open, onOpenChange, tz, onCreated }: { open: boolean
     e.preventDefault();
     if (!chosen) return;
     if (form.name.trim().length < 2 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email)) {
-      toast.error("Name and a valid email are required.");
+      toast.error("Please enter a name and a valid email address.");
       return;
     }
     setBusy(true);
@@ -257,6 +318,7 @@ function AddBookingDialog({ open, onOpenChange, tz, onCreated }: { open: boolean
       const startsAt = localToIso(form.day, form.time, tz);
       await coachCreateBooking({ sessionType: chosen, startsAt, name: form.name, email: form.email, phone: form.phone, status: form.status, notes: form.notes });
       toast.success("Booking added.");
+      setForm(initialAddForm(tz));
       onOpenChange(false);
       onCreated();
     } catch (err) {
@@ -267,7 +329,7 @@ function AddBookingDialog({ open, onOpenChange, tz, onCreated }: { open: boolean
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} title="Add a booking" description="For walk-ins, phone bookings or regulars. Skips the public availability rules but still blocks the time." wide>
+    <Dialog open={open} onOpenChange={onOpenChange} title="Add a booking" description="For bookings made directly with you. This skips the public availability rules but still holds the time." wide>
       <form onSubmit={submit} className="grid gap-4 sm:grid-cols-2">
         <Field id="ab-name" label="Client name">
           <Input id="ab-name" value={form.name} onChange={set("name")} required />

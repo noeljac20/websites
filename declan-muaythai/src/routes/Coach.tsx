@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { CalendarDays, Clock3, Dumbbell, LayoutDashboard, LogOut, Settings2, Users } from "lucide-react";
+import { ArrowUpRight, CalendarDays, Clock3, Dumbbell, LayoutDashboard, LogOut, Settings2, Users } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { Spinner } from "@/components/ui";
 import { useCoachAuth } from "@/lib/auth";
@@ -32,7 +32,7 @@ export function CoachPage() {
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
 
   useEffect(() => {
-    document.title = `Coach dashboard — ${site.name}`;
+    document.title = `Coach dashboard | ${site.name}`;
     fetchSettings().then(setSettings).catch(() => {});
   }, []);
 
@@ -61,12 +61,13 @@ export function CoachPage() {
           <button
             type="button"
             onClick={() => auth.signOut()}
-            className="label-caps flex items-center gap-1.5 text-fog hover:text-cream lg:hidden"
+            className="-mr-2 inline-flex min-h-11 items-center gap-1.5 px-2 text-[14px] font-semibold text-fog hover:text-cream lg:hidden"
           >
-            <LogOut className="size-4" /> Out
+            <LogOut className="size-4" aria-hidden /> Sign out
           </button>
         </div>
-        <nav className="flex gap-1 overflow-x-auto px-3 pb-3 scrollbar-none lg:flex-col lg:px-3" aria-label="Dashboard">
+        {/* Tabs wrap onto a second row on phones so none are hidden off the right edge. */}
+        <nav className="flex flex-wrap gap-1 px-3 pb-3 lg:flex-col lg:px-3" aria-label="Dashboard">
           {TABS.map((t) => (
             <button
               key={t.id}
@@ -82,12 +83,12 @@ export function CoachPage() {
             </button>
           ))}
         </nav>
-        <div className="mt-auto hidden flex-col gap-2 px-5 pb-6 lg:absolute lg:bottom-0 lg:flex">
-          <Link to="/" className="text-[13px] text-mute hover:text-fog">
-            View public site →
+        <div className="mt-auto hidden flex-col px-5 pb-4 lg:absolute lg:bottom-0 lg:flex">
+          <Link to="/" className="inline-flex min-h-11 items-center gap-1.5 py-3 text-[13px] text-mute hover:text-fog">
+            View public site <ArrowUpRight className="size-3.5" aria-hidden />
           </Link>
-          <button type="button" onClick={() => auth.signOut()} className="flex items-center gap-2 text-[13px] text-mute hover:text-fog">
-            <LogOut className="size-3.5" /> Sign out
+          <button type="button" onClick={() => auth.signOut()} className="inline-flex min-h-11 items-center gap-2 py-3 text-[13px] text-mute hover:text-fog">
+            <LogOut className="size-3.5" aria-hidden /> Sign out
           </button>
         </div>
       </aside>

@@ -37,10 +37,10 @@ export function Clients({ settings }: { settings: Settings }) {
       </div>
       {clients.loading && !clients.data && (
         <div className="flex items-center gap-3 text-fog">
-          <Spinner /> Loading…
+          <Spinner /> Loading
         </div>
       )}
-      {clients.data && list.length === 0 && <EmptyState title="No clients yet" body="Every booking creates a client record here." />}
+      {clients.data && list.length === 0 && <EmptyState title={q.trim() ? "No clients match that search." : "No clients yet."} body={q.trim() ? undefined : "Every booking creates a client record here."} />}
       <ul className="flex flex-col gap-2">
         {list.map((c) => (
           <ClientRow key={c.id} client={c} bookings={byClient.get(c.email) ?? []} tz={tz} onChange={clients.reload} />
@@ -91,7 +91,7 @@ function ClientRow({ client: c, bookings, tz, onChange }: { client: Client; book
         <div className="hairline-t grid gap-5 px-4 py-4 md:grid-cols-2">
           <div className="flex flex-col gap-3 text-[14px]">
             <p className="text-cream">{c.email}</p>
-            <p className="text-cream">{c.phone ?? "No phone"}</p>
+            <p className="text-cream">{c.phone ?? "No phone number given"}</p>
             <p className="text-fog">Experience: {experienceLabel(c.experience)}</p>
             {c.goals && <p className="text-fog">Goals: {c.goals}</p>}
             <p className="text-mute">Client since {fmtDate(c.created_at, tz, { year: "numeric" })}</p>
@@ -100,7 +100,7 @@ function ClientRow({ client: c, bookings, tz, onChange }: { client: Client; book
               <label htmlFor={`cn-${c.id}`} className="label-caps">
                 Client notes (private)
               </label>
-              <Textarea id={`cn-${c.id}`} value={notes} onChange={(e) => setNotes(e.target.value)} className="mt-1.5 min-h-[90px] field-sm" placeholder="Injuries, preferences, pack balance, progress…" />
+              <Textarea id={`cn-${c.id}`} value={notes} onChange={(e) => setNotes(e.target.value)} className="mt-1.5 min-h-[90px] field-sm" placeholder="Injuries, preferences, progress and what to work on next." />
               <div className="mt-2 flex justify-end">
                 <Button size="sm" variant="soft" loading={busy} onClick={save} disabled={notes === (c.coach_notes ?? "")}>
                   Save notes

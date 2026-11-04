@@ -96,6 +96,7 @@ export function Select({ className, children, ...props }: React.SelectHTMLAttrib
   );
 }
 
+/** The visible track stays 48x28; the button around it is at least 44x44 so it is easy to tap. */
 export function Switch({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label: string }) {
   return (
     <button
@@ -104,17 +105,22 @@ export function Switch({ checked, onChange, label }: { checked: boolean; onChang
       aria-checked={checked}
       aria-label={label}
       onClick={() => onChange(!checked)}
-      className={cn(
-        "relative inline-flex h-7 w-12 shrink-0 items-center rounded-full border transition-colors",
-        checked ? "border-green bg-green/80" : "border-line-strong bg-surface-3",
-      )}
+      className="-my-2 inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full"
     >
       <span
+        aria-hidden
         className={cn(
-          "inline-block size-5 rounded-full bg-cream shadow transition-transform",
-          checked ? "translate-x-6" : "translate-x-1",
+          "relative inline-flex h-7 w-12 items-center rounded-full border transition-colors",
+          checked ? "border-green bg-green/80" : "border-line-strong bg-surface-3",
         )}
-      />
+      >
+        <span
+          className={cn(
+            "inline-block size-5 rounded-full bg-cream shadow transition-transform",
+            checked ? "translate-x-6" : "translate-x-1",
+          )}
+        />
+      </span>
     </button>
   );
 }
@@ -140,7 +146,7 @@ export function Badge({ tone = "neutral", children, className }: { tone?: string
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[12px] font-semibold uppercase tracking-[0.12em]",
+        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-display text-[12px] font-semibold",
         badgeTone[tone] ?? badgeTone.neutral,
         className,
       )}

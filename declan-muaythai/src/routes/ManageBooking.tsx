@@ -18,7 +18,7 @@ export function ManageBookingPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    document.title = `Your booking — ${site.name}`;
+    document.title = `Your booking | ${site.name}`;
     fetchSettings().then(setSettings).catch(() => {});
     getBookingByToken(token)
       .then(setBooking)
@@ -31,7 +31,7 @@ export function ManageBookingPage() {
       const b = await cancelBookingByToken(token);
       setBooking(b);
       setConfirmOpen(false);
-      toast.success("Booking cancelled.");
+      toast.success("Your booking has been cancelled.");
     } catch (e) {
       toast.error(errorMessage(e));
     } finally {
@@ -43,21 +43,29 @@ export function ManageBookingPage() {
   const upcoming = booking && new Date(booking.starts_at) > new Date();
   const cancellable = booking && upcoming && (booking.status === "pending" || booking.status === "confirmed");
 
+  const statusSentence: Record<PublicBooking["status"], string> = {
+    pending: `${site.coach} has your request and will confirm it personally.`,
+    confirmed: `Your session is confirmed. ${site.coach} will see you at ${site.gym}.`,
+    cancelled: "This booking has been cancelled. You are welcome to book another time below.",
+    completed: "This session has taken place. You can book your next one below.",
+    no_show: `This booking was marked as a no-show. If that is not right, message ${site.coach} on Instagram (${site.instagramHandle}).`,
+  };
+
   return (
     <>
       <Nav solid />
       <main className="mx-auto min-h-dvh max-w-2xl px-4 pb-24 pt-28 sm:px-6">
         {booking === undefined && (
-          <div className="flex items-center gap-3 text-fog">
-            <Spinner /> Loading your booking…
+          <div className="flex items-center gap-3 text-fog" aria-live="polite">
+            <Spinner /> Loading your booking
           </div>
         )}
         {booking === null && (
           <div className="card p-8 text-center">
             <h1 className="display text-[30px] text-cream">Booking not found</h1>
-            <p className="mt-3 text-fog">That link doesn't match a booking. Check the link in your confirmation email.</p>
+            <p className="mt-3 text-fog">This link does not match a booking. Please check the manage link from your confirmation page.</p>
             <Link to="/book" className="btn btn-primary mt-6">
-              Make a booking
+              Book a session
             </Link>
           </div>
         )}
@@ -65,20 +73,22 @@ export function ManageBookingPage() {
           <div className="card animate-rise p-6 sm:p-10">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="eyebrow">Your booking</p>
-                <h1 className="display mt-2 text-[clamp(1.85rem,3.4vw,2.6rem)] text-cream">{booking.session_name}</h1>
+                <p className="eyebrow">{booking.session_name}</p>
+                <h1 className="display mt-2 text-[clamp(1.85rem,3.4vw,2.6rem)] text-cream">Your booking</h1>
               </div>
               <Badge tone={booking.status}>{STATUS_LABEL[booking.status]}</Badge>
             </div>
-            <p className="mt-3 text-[15px] text-fog">
-              {booking.status === "pending" && `Waiting on ${site.coach} to confirm. ${site.bookingNotice}`}
-              {booking.status === "confirmed" && "Confirmed. See you there."}
-              {booking.status === "cancelled" && "This booking has been cancelled."}
-              {booking.status === "completed" && "Done and dusted. Book the next one below."}
-              {booking.status === "no_show" && "Marked as a no-show. Message Declan if that's wrong."}
-            </p>
+            <p className="mt-3 text-[15px] leading-relaxed text-fog">{statusSentence[booking.status]}</p>
 
             <dl className="mt-8 grid gap-4 rounded-xl bg-ink-2 p-5 sm:grid-cols-2">
+              <div>
+                <dt className="label-caps">Session</dt>
+                <dd className="mt-1 font-semibold text-cream">{booking.session_name}</dd>
+              </div>
+              <div>
+                <dt className="label-caps">Name</dt>
+                <dd className="mt-1 font-semibold text-cream">{booking.client_name}</dd>
+              </div>
               <div>
                 <dt className="label-caps">When</dt>
                 <dd className="mt-1 font-semibold text-cream">
@@ -90,65 +100,81 @@ export function ManageBookingPage() {
               <div>
                 <dt className="label-caps">Where</dt>
                 <dd className="mt-1 flex items-start gap-1.5 font-semibold text-cream">
-                  <MapPin className="mt-1 size-4 shrink-0 text-mute" /> {settings.location}
+                  <MapPin className="mt-1 size-4 shrink-0 text-mute" aria-hidden /> {settings.location || site.location}
                 </dd>
               </div>
               <div>
-                <dt className="label-caps">Name</dt>
-                <dd className="mt-1 font-semibold text-cream">{booking.client_name}</dd>
-              </div>
-              <div>
                 <dt className="label-caps">Price</dt>
-                <dd className="mt-1 font-semibold text-cream">{fmtMoney(booking.price_cents)} · pay on the day</dd>
+                <dd className="mt-1 font-semibold text-cream">
+                  {fmtMoney(booking.price_cents)} <span className="font-medium text-fog">paid directly to {site.coach}</span>
+                </dd>
               </div>
             </dl>
 
             {upcoming && booking.status !== "cancelled" && (
               <div className="mt-6 flex flex-wrap gap-3">
                 <a
-                  href={googleCalendarUrl({ title: `Muay Thai with ${site.coach}`, start: booking.starts_at, end: booking.ends_at, location: settings.location })}
+                  href={googleCalendarUrl({
+                    title: `Muay Thai with ${site.coach}: ${booking.session_name}`,
+                    start: booking.starts_at,
+                    end: booking.ends_at,
+                    location: settings.location,
+                  })}
                   target="_blank"
                   rel="noreferrer"
                   className="btn btn-soft btn-sm"
                 >
-                  <CalendarPlus className="size-4" /> Google Calendar
+                  <CalendarPlus className="size-4" aria-hidden /> Add to Google Calendar
                 </a>
                 <a
-                  href={icsFile({ title: `Muay Thai with ${site.coach}`, start: booking.starts_at, end: booking.ends_at, location: settings.location, uid: booking.id })}
+                  href={icsFile({
+                    title: `Muay Thai with ${site.coach}: ${booking.session_name}`,
+                    start: booking.starts_at,
+                    end: booking.ends_at,
+                    location: settings.location,
+                    uid: booking.id,
+                  })}
                   download="declan-muay-thai.ics"
                   className="btn btn-soft btn-sm"
                 >
-                  <CalendarPlus className="size-4" /> Apple / Outlook
+                  <CalendarPlus className="size-4" aria-hidden /> Add to Apple or Outlook calendar
                 </a>
               </div>
             )}
 
             <div className="mt-10 flex flex-col gap-3 hairline-t pt-6 sm:flex-row sm:items-center sm:justify-between">
               <Link to="/book" className="btn btn-primary">
-                {booking.status === "cancelled" || booking.status === "completed" ? "Book a session" : "Book another"}
+                {booking.status === "cancelled" || booking.status === "completed" ? "Book a session" : "Book another session"}
               </Link>
               {cancellable && (
                 <Button variant="danger" onClick={() => setConfirmOpen(true)}>
-                  Cancel this booking
+                  Cancel booking
                 </Button>
               )}
             </div>
-            <p className="mt-4 text-[13px] text-mute">
-              Need to move it instead? Cancel here and book a new time, or message {site.coach}
-              {site.email ? ` at ${site.email}` : ""}.
-            </p>
+            {cancellable && (
+              <p className="mt-4 text-[13px] leading-relaxed text-mute">
+                Need a different time? Cancel this booking and book a new one, or message {site.coach} on Instagram ({site.instagramHandle})
+                {site.email ? ` or email ${site.email}` : ""}. Please give as much notice as you can so someone else can use the time.
+              </p>
+            )}
           </div>
         )}
       </main>
       <Footer />
 
-      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen} title="Cancel this booking?" description="Your slot will be released for someone else. You can always book again.">
+      <Dialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        title="Cancel this booking?"
+        description="The time will be released for someone else. You can book again at any time."
+      >
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button variant="ghost" onClick={() => setConfirmOpen(false)}>
-            Keep it
+            Keep booking
           </Button>
           <Button variant="danger" loading={busy} onClick={cancel}>
-            Yes, cancel
+            Cancel booking
           </Button>
         </div>
       </Dialog>

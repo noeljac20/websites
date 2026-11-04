@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { Button, Field, Input, Spinner, Switch } from "@/components/ui";
+import { Button, Dialog, Field, Input, Spinner, Switch } from "@/components/ui";
 import {
   coachAddBlockedDate,
   coachDeleteRule,
@@ -26,7 +26,7 @@ export function Availability() {
       <PageHeader title="Availability" sub="The windows people can book into. Sessions are offered on the hour inside each window (change the interval in Settings)." />
       {rules.loading && !rules.data && (
         <div className="flex items-center gap-3 text-fog">
-          <Spinner /> Loading…
+          <Spinner /> Loading
         </div>
       )}
       <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
@@ -46,6 +46,7 @@ function DayRow({ weekday, rules, onChange }: { weekday: number; rules: Availabi
   const [start, setStart] = useState("06:00");
   const [end, setEnd] = useState("09:00");
   const [busy, setBusy] = useState(false);
+  const [removing, setRemoving] = useState<AvailabilityRule | null>(null);
 
   async function add() {
     if (end <= start) {
@@ -74,11 +75,16 @@ function DayRow({ weekday, rules, onChange }: { weekday: number; rules: Availabi
   }
 
   async function remove(r: AvailabilityRule) {
+    setBusy(true);
     try {
       await coachDeleteRule(r.id);
+      setRemoving(null);
+      toast.success("Window removed.");
       onChange();
     } catch (e) {
       toast.error(errorMessage(e));
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -86,26 +92,50 @@ function DayRow({ weekday, rules, onChange }: { weekday: number; rules: Availabi
     <div className="card-2 p-4">
       <div className="flex items-center justify-between">
         <h2 className="display-md text-[17px] text-cream">{weekdayName(weekday)}</h2>
-        <Button size="sm" variant="soft" onClick={() => setAdding((a) => !a)}>
-          <Plus className="size-4" /> Window
+        <Button size="sm" variant="soft" onClick={() => setAdding((a) => !a)} aria-expanded={adding}>
+          <Plus className="size-4" aria-hidden /> Add window
         </Button>
       </div>
-      {rules.length === 0 && !adding && <p className="mt-2 text-[13px] text-mute">Not available</p>}
+      {rules.length === 0 && !adding && <p className="mt-2 text-[13px] text-mute">No windows yet. Nothing can be booked on this day.</p>}
       <ul className="mt-2 flex flex-col gap-2">
         {rules.map((r) => (
           <li key={r.id} className="flex items-center justify-between gap-3 rounded-md bg-ink-2 px-3 py-2">
             <span className={`tnum text-[15px] font-semibold ${r.is_active ? "text-cream" : "text-mute line-through"}`}>
-              {fmtClock(r.start_time)} – {fmtClock(r.end_time)}
+              {fmtClock(r.start_time)} to {fmtClock(r.end_time)}
             </span>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <Switch checked={r.is_active} onChange={(v) => toggle(r, v)} label={`Toggle ${weekdayName(weekday)} ${fmtClock(r.start_time)} window`} />
-              <button type="button" onClick={() => remove(r)} aria-label="Remove window" className="grid size-9 place-items-center rounded-md text-mute hover:bg-red-soft hover:text-[#ff8a8e]">
-                <Trash2 className="size-4" />
+              <button
+                type="button"
+                onClick={() => setRemoving(r)}
+                aria-label={`Remove ${fmtClock(r.start_time)} to ${fmtClock(r.end_time)} window`}
+                className="grid size-11 place-items-center rounded-md text-mute hover:bg-red-soft hover:text-[#ff8a8e]"
+              >
+                <Trash2 className="size-4" aria-hidden />
               </button>
             </div>
           </li>
         ))}
       </ul>
+      <Dialog
+        open={removing !== null}
+        onOpenChange={(o) => !o && setRemoving(null)}
+        title="Remove this window?"
+        description={
+          removing
+            ? `${weekdayName(weekday)} ${fmtClock(removing.start_time)} to ${fmtClock(removing.end_time)} will no longer be bookable. Existing bookings are not changed.`
+            : undefined
+        }
+      >
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <Button variant="ghost" onClick={() => setRemoving(null)}>
+            Keep window
+          </Button>
+          <Button variant="danger" loading={busy} onClick={() => removing && remove(removing)}>
+            Remove window
+          </Button>
+        </div>
+      </Dialog>
       {adding && (
         <div className="mt-3 flex flex-wrap items-end gap-2">
           <Field id={`s-${weekday}`} label="From">
@@ -115,7 +145,7 @@ function DayRow({ weekday, rules, onChange }: { weekday: number; rules: Availabi
             <Input id={`e-${weekday}`} type="time" step={900} value={end} onChange={(e) => setEnd(e.target.value)} className="field-sm w-[130px]" />
           </Field>
           <Button size="sm" loading={busy} onClick={add}>
-            Add
+            Save window
           </Button>
           <Button size="sm" variant="ghost" onClick={() => setAdding(false)}>
             Cancel
@@ -130,7 +160,22 @@ function BlockedDates({ list, onChange }: { list: { id: string; day: string; rea
   const [day, setDay] = useState("");
   const [reason, setReason] = useState("");
   const [busy, setBusy] = useState(false);
+  const [unblocking, setUnblocking] = useState<{ id: string; day: string } | null>(null);
   const upcoming = list.filter((b) => b.day >= new Date().toISOString().slice(0, 10));
+
+  async function unblock(b: { id: string; day: string }) {
+    setBusy(true);
+    try {
+      await coachRemoveBlockedDate(b.id);
+      setUnblocking(null);
+      toast.success("Date unblocked.");
+      onChange();
+    } catch (e) {
+      toast.error(errorMessage(e));
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function add(e: React.FormEvent) {
     e.preventDefault();
@@ -151,13 +196,13 @@ function BlockedDates({ list, onChange }: { list: { id: string; day: string; rea
   return (
     <section className="card h-fit p-5">
       <h2 className="display-md text-[19px] text-cream">Days off</h2>
-      <p className="mt-1 text-[13px] text-fog">Fight weeks, holidays, rest days. Nothing can be booked on these dates.</p>
+      <p className="mt-1 text-[13px] text-fog">Days you are away or not coaching. Nothing can be booked on these dates.</p>
       <form onSubmit={add} className="mt-4 flex flex-col gap-3">
-        <Field id="bd-day" label="Date">
-          <Input id="bd-day" type="date" value={day} onChange={(e) => setDay(e.target.value)} required className="field-sm" />
+        <Field id="bd-day" label="Date" hint="Pick a date.">
+          <Input id="bd-day" type="date" value={day} onChange={(e) => setDay(e.target.value)} required className="field-sm" aria-describedby="bd-day-hint" />
         </Field>
         <Field id="bd-reason" label="Reason" optional>
-          <Input id="bd-reason" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Fight camp" className="field-sm" />
+          <Input id="bd-reason" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Away" className="field-sm" />
         </Field>
         <Button size="sm" type="submit" loading={busy}>
           <Plus className="size-4" /> Block date
@@ -173,15 +218,30 @@ function BlockedDates({ list, onChange }: { list: { id: string; day: string; rea
             </span>
             <button
               type="button"
-              onClick={() => coachRemoveBlockedDate(b.id).then(onChange).catch((e) => toast.error(errorMessage(e)))}
-              aria-label="Unblock date"
-              className="grid size-9 place-items-center rounded-md text-mute hover:bg-red-soft hover:text-[#ff8a8e]"
+              onClick={() => setUnblocking(b)}
+              aria-label={`Unblock ${fmtDayString(b.day)}`}
+              className="grid size-11 place-items-center rounded-md text-mute hover:bg-red-soft hover:text-[#ff8a8e]"
             >
-              <Trash2 className="size-4" />
+              <Trash2 className="size-4" aria-hidden />
             </button>
           </li>
         ))}
       </ul>
+      <Dialog
+        open={unblocking !== null}
+        onOpenChange={(o) => !o && setUnblocking(null)}
+        title="Unblock this date?"
+        description={unblocking ? `${fmtDayString(unblocking.day)} will open for bookings again.` : undefined}
+      >
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <Button variant="ghost" onClick={() => setUnblocking(null)}>
+            Keep it blocked
+          </Button>
+          <Button variant="danger" loading={busy} onClick={() => unblocking && unblock(unblocking)}>
+            Unblock date
+          </Button>
+        </div>
+      </Dialog>
     </section>
   );
 }

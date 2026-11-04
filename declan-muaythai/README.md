@@ -2,9 +2,9 @@
 
 Private Muay Thai coaching site with online bookings and a coach dashboard.
 
-- **Public site** (`/`): hero, what a session looks like, pricing (live from the database), about, results, how to book, FAQ.
-- **Booking** (`/book`): pick a session → pick a date and time from live availability → details → confirmation with calendar links and a manage link.
-- **Manage booking** (`/booking/:token`): clients can view and cancel their own booking from the link in their confirmation.
+- **Public site** (`/`): hero, what a session includes, pricing (live from the database), about Declan, a two-photo band about training at The Headhunters Gym (win photo and team photo with his coach and training partners), two short training clips (pad work and a kids session; muted autoplay with a sound toggle, playing only while in view), how booking works, common questions.
+- **Booking** (`/book`): pick a session, then a date and time from live availability, then details, then confirmation with calendar links and a manage link.
+- **Manage booking** (`/booking/:token`): clients can view and cancel their own booking from the manage link shown on their confirmation page.
 - **Coach dashboard** (`/coach`): today's overview, schedule (confirm / complete / no-show / cancel, private session notes, add walk-ins), clients with history and notes, weekly availability and days off, services and prices, booking settings.
 
 ## Stack
@@ -38,13 +38,23 @@ Bookings and client records are only readable by the coach account.
 1. Open `/coach/login`. Because no coach exists yet, the page offers **Create coach account**.
 2. Sign up with Declan's email and a password. The first account created becomes the coach (nobody else can claim it afterwards).
 3. If Supabase email confirmation is on, confirm the email, then sign in.
-4. In **Settings**, set the gym location (sent with confirmations), timezone, slot interval, notice period and whether bookings auto-confirm.
-5. In **Availability**, adjust the weekly windows (defaults: Mon–Fri 6–9am and 4–8pm, Sat 8am–12pm).
-6. In **Services**, check prices. `$40 / 1 hour` is live; the pack prices are placeholders to confirm.
+4. In **Settings**, set the gym location (shown on the booking, confirmation and manage pages), timezone, slot interval, notice period and whether bookings auto-confirm. The live value is currently `The Headhunters Gym`; set it to `The Headhunters Gym, Melbourne` so it matches the public site (the suburb or street address still needs confirming with Declan).
+5. In **Availability**, adjust the weekly windows (defaults: Mon to Fri 6 to 9am and 4 to 8pm, Sat 8am to 12pm. These are placeholders; set Declan's real hours before launch).
+6. In **Services**, check the two services match Declan's offer: **1-on-1 Training** (`private-1on1`, 60 min, $40) and **Kids Training** (`kids-training`, ages 7+, 45 min, $30, flagged `for_kids`). There are no packs or partner sessions; don't add any without Declan's say-so.
+7. The service copy and gym location in the database match `FALLBACK_SESSION_TYPES` in `src/lib/booking.ts` (migration `20261104230000_service_copy_and_location.sql`). Edit them in the **Services** and **Settings** tabs if they change.
 
 ## Content to confirm before launch
 
-Editable copy lives in `src/lib/site.ts`. Items marked `TODO` need Declan's input: contact email and phone, Instagram, gym name/address, the exact wording of the 2026 championship title and the "coaching since" year.
+- The kids clip in `public/videos/session-kids.mp4` shows a child. Confirm with Declan that the parent or guardian is happy for it to be on the site before launch.
+
+Editable copy lives in `src/lib/site.ts`. Facts taken from Declan's Instagram post (@declan_woodss, https://instagram.com/declan_woodss) are already in: The Headhunters Gym, $40 / 1 hour 1-on-1, $30 / 45 min kids (ages 7+), beginner and intermediate welcome, limited spots. The copy is written to be plain and professional: sentence case, no exclamation marks, and no quotations or testimonials anywhere on the site (keep it that way when editing). Items marked `TODO` still need Declan's input:
+
+- contact email and phone
+- the gym's suburb / street address (only "The Headhunters Gym, Melbourne" is known)
+- the exact wording of the 2026 championship title and division
+- how he prefers to be paid (the site only says nothing is paid online and payment is arranged directly with Declan)
+- what equipment is available (the site does not claim gloves or wraps are provided)
+- the session structure described under "What a session includes"
 
 ## Deploy
 
@@ -57,5 +67,5 @@ Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` as environment varia
 
 ## Not included yet
 
-- Email / SMS notifications to Declan or the client (needs an email provider such as Resend). The dashboard has a "copy confirmation text" button in the meantime.
-- Online payment. Sessions are paid on the day; Stripe can be added later.
+- Email / SMS notifications to Declan or the client (needs an email provider such as Resend). The dashboard has a Copy confirmation message button in the meantime, and the public copy says the manage link is shown on the confirmation page rather than emailed.
+- Online payment. Payment is arranged directly with Declan; Stripe can be added later.

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, ArrowUpRight, Check, Clock, Medal, Users } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, Clock, Medal } from "lucide-react";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { Reveal } from "@/components/Reveal";
+import { SessionVideos } from "@/components/SessionVideos";
 import { SectionHeading } from "@/components/ui";
 import { site } from "@/lib/site";
 import { FALLBACK_SESSION_TYPES, fetchSessionTypes, type SessionType } from "@/lib/booking";
@@ -12,25 +13,25 @@ import { cn } from "@/lib/utils";
 
 export function HomePage() {
   useEffect(() => {
-    document.title = `${site.name} — Private Muay Thai Coaching, Melbourne`;
+    document.title = `${site.name}: private Muay Thai coaching in Melbourne`;
   }, []);
   return (
-    <>
+    // Bottom padding on phones matches the fixed book bar so it never covers the last footer row (Coach login).
+    <div className="pb-[calc(72px+env(safe-area-inset-bottom))] md:pb-0">
       <Nav />
       <main>
         <Hero />
-        <Marquee />
         <SessionSection />
         <Pricing />
         <About />
-        <Results />
+        <TrainingBand />
         <HowToBook />
         <Faq />
         <FinalCta />
       </main>
       <Footer />
       <MobileBookBar />
-    </>
+    </div>
   );
 }
 
@@ -55,9 +56,10 @@ function Hero() {
           <p className="eyebrow animate-rise mb-5 flex items-center gap-3">
             <span className="h-px w-8 bg-gold" /> {site.hero.eyebrow}
           </p>
-          <h1 className="display animate-rise text-[clamp(2.6rem,6vw,4.6rem)] text-cream [animation-delay:80ms]">
+          <h1 className="display animate-rise text-[clamp(2.4rem,5.5vw,4.2rem)] text-cream [animation-delay:80ms]">
             {site.hero.headline.map((line, i) => (
-              <span key={line} className={cn("block", i === site.hero.headline.length - 1 && "text-red")}>
+              <span key={line} className="sm:block">
+                {i > 0 ? " " : ""}
                 {line}
               </span>
             ))}
@@ -70,9 +72,24 @@ function Hero() {
               Book a session <ArrowRight className="size-5" />
             </Link>
             <a href="#pricing" className="btn btn-ghost">
-              See pricing
+              View pricing
             </a>
+            {site.instagram && (
+              <a
+                href={site.instagram}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex min-h-12 items-center gap-1.5 px-1 text-[15px] font-semibold text-fog transition-colors hover:text-cream"
+              >
+                Message on Instagram <ArrowUpRight className="size-4" />
+              </a>
+            )}
           </div>
+          {site.limitedSpots && (
+            <p className="animate-rise mt-5 flex items-center gap-2 text-[13px] text-mute [animation-delay:280ms]">
+              <span className="size-1.5 rounded-full bg-gold" aria-hidden /> {site.limitedSpotsText}
+            </p>
+          )}
         </div>
 
         <dl className="animate-rise mt-12 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-4 [animation-delay:320ms]">
@@ -88,29 +105,13 @@ function Hero() {
   );
 }
 
-/* ================================================================ MARQUEE */
-function Marquee() {
-  const items = [...site.marquee, ...site.marquee];
-  return (
-    <div className="relative overflow-hidden bg-ink-2 py-3 hairline-t hairline-b" aria-hidden>
-      <div className="flex w-max motion-safe:animate-marquee">
-        {items.map((t, i) => (
-          <span key={i} className="label-caps mx-5 flex items-center gap-5 text-[12px] text-fog">
-            {t} <span className="size-1 rounded-full bg-red" />
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ================================================================ SESSION */
+/* ================================================================ SESSIONS */
 function SessionSection() {
   return (
-    <section id="session" className="scroll-mt-20 py-20 sm:py-28">
+    <section id="sessions" className="scroll-mt-20 py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <Reveal>
-          <SectionHeading eyebrow={site.session.eyebrow} title={site.session.title} />
+          <SectionHeading eyebrow={site.session.eyebrow} title={site.session.title} body={site.session.intro} />
         </Reveal>
         <ol className="mt-12 grid gap-4 md:grid-cols-3">
           {site.session.steps.map((s, i) => (
@@ -141,62 +142,47 @@ function Pricing() {
     <section id="pricing" className="scroll-mt-20 bg-ink-2 py-20 hairline-t sm:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <Reveal className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <SectionHeading eyebrow="Pricing" title="Simple. No lock-in." body="Pay per session or grab a pack. Everything is one-on-one unless you bring a mate." />
-          <p className="label-caps shrink-0">Pay on the day · cash or transfer</p>
+          <SectionHeading eyebrow={site.pricing.eyebrow} title={site.pricing.title} body={site.pricing.intro} />
+          <p className="shrink-0 text-[13px] text-mute md:text-right">{site.pricing.note}</p>
         </Reveal>
 
-        <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {list.map((t, i) => {
-            const each = t.sessions_included > 1 ? Math.round(t.price_cents / t.sessions_included) : null;
-            return (
-              <Reveal
-                key={t.id}
-                delay={i * 70}
-                className={cn(
-                  "card relative flex flex-col p-6 transition-transform duration-300 hover:-translate-y-1",
-                  t.is_featured && "border-red/60 shadow-glow-red lg:-mt-3 lg:mb-3",
-                )}
+        <div className="mx-auto mt-12 grid max-w-3xl gap-4 md:grid-cols-2">
+          {list.map((t, i) => (
+            <Reveal
+              key={t.id}
+              delay={i * 70}
+              className={cn(
+                "card relative flex flex-col p-6 transition-transform duration-300 hover:-translate-y-1",
+                t.is_featured && "border-red/60 shadow-glow-red",
+              )}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h3 className="display-md text-[21px] text-cream">{t.name}</h3>
+                  {t.tagline && <p className="mt-1 text-[14px] text-fog">{t.tagline}</p>}
+                </div>
+                <Clock className="size-5 shrink-0 text-mute" aria-hidden />
+              </div>
+              <div className="mt-6 flex items-end gap-2">
+                <span className="display text-[38px] text-cream">{fmtMoney(t.price_cents)}</span>
+                <span className="mb-2 text-[13px] text-mute">{t.duration_min} minutes</span>
+              </div>
+              <ul className="mt-6 flex flex-col gap-2.5 text-[14px] text-fog">
+                {t.features.map((f) => (
+                  <li key={f} className="flex gap-2.5">
+                    <Check className="mt-0.5 size-4 shrink-0 text-gold" aria-hidden /> {f}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                to="/book"
+                search={{ type: t.slug }}
+                className={cn("btn mt-8 w-full", t.is_featured ? "btn-primary" : "btn-soft")}
               >
-                {t.is_featured && (
-                  <span className="absolute -top-3 left-6 rounded-full bg-red px-3 py-1 font-display text-[11px] font-700 uppercase tracking-[0.18em] text-white">
-                    Most popular
-                  </span>
-                )}
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 className="display-md text-[21px] text-cream">{t.name}</h3>
-                    {t.tagline && <p className="mt-1 text-[14px] text-fog">{t.tagline}</p>}
-                  </div>
-                  {t.sessions_included > 1 ? (
-                    <Users className="size-5 shrink-0 text-mute" aria-hidden />
-                  ) : (
-                    <Clock className="size-5 shrink-0 text-mute" aria-hidden />
-                  )}
-                </div>
-                <div className="mt-6 flex items-end gap-2">
-                  <span className="display text-[38px] text-cream">{fmtMoney(t.price_cents)}</span>
-                  <span className="mb-2 text-[13px] text-mute">
-                    {t.sessions_included > 1 ? `${t.sessions_included} sessions` : `${t.duration_min} min`}
-                  </span>
-                </div>
-                {each !== null && <p className="text-[13px] text-gold">{fmtMoney(each)} per session</p>}
-                <ul className="mt-6 flex flex-col gap-2.5 text-[14px] text-fog">
-                  {t.features.map((f) => (
-                    <li key={f} className="flex gap-2.5">
-                      <Check className="mt-0.5 size-4 shrink-0 text-gold" aria-hidden /> {f}
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  to="/book"
-                  search={{ type: t.slug }}
-                  className={cn("btn mt-8 w-full", t.is_featured ? "btn-primary" : "btn-soft")}
-                >
-                  {t.sessions_included > 1 ? "Book first session" : "Book now"}
-                </Link>
-              </Reveal>
-            );
-          })}
+                Book a session
+              </Link>
+            </Reveal>
+          ))}
         </div>
       </div>
     </section>
@@ -214,14 +200,14 @@ function About() {
               <source srcSet="/images/declan-podium.webp" type="image/webp" />
               <img
                 src="/images/declan-podium.jpg"
-                alt="Declan wearing a gold medal beside his coach at the Muay Thai Australia National Championships"
+                alt="Declan on the podium wearing a gold medal at the 2026 Muay Thai Australia National Championships"
                 className="aspect-[4/5] w-full object-cover object-top"
                 loading="lazy"
               />
             </picture>
             <div className="absolute inset-x-0 bottom-0 bg-[linear-gradient(180deg,transparent,rgba(10,10,11,0.85))] p-5 pt-20">
-              <p className="flex items-center gap-2 font-display text-[14px] font-600 uppercase tracking-[0.18em] text-gold">
-                <Medal className="size-4" /> National Championships 2026
+              <p className="flex items-center gap-2 text-[14px] font-semibold text-gold">
+                <Medal className="size-4" aria-hidden /> {site.about.podiumCaption}
               </p>
             </div>
           </div>
@@ -242,59 +228,56 @@ function About() {
               </li>
             ))}
           </ul>
-          <blockquote className="mt-8 border-l-2 border-gold pl-5 font-display text-[20px] font-600 leading-snug text-cream">
-            “{site.about.quote}”
-          </blockquote>
         </Reveal>
       </div>
     </section>
   );
 }
 
-/* ================================================================ RESULTS */
-function Results() {
-  return (
-    <section className="relative isolate overflow-hidden py-24 sm:py-36">
-      <picture className="absolute inset-0 -z-10">
-        <source srcSet="/images/declan-win.webp" type="image/webp" />
-        <img
-          src="/images/declan-win.jpg"
-          alt="Referee raising Declan's hand after a win"
-          className="h-full w-full object-cover object-[50%_25%]"
-          loading="lazy"
-        />
-      </picture>
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,#0a0a0b_0%,rgba(10,10,11,0.35)_40%,rgba(10,10,11,0.5)_70%,#0a0a0b_100%)]" />
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(10,10,11,0.85)_0%,rgba(10,10,11,0.55)_45%,rgba(10,10,11,0)_75%)]" />
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <Reveal className="max-w-xl">
-          <p className="eyebrow mb-4">Hand raised</p>
-          <h2 className="display text-[clamp(1.9rem,4vw,3rem)] text-cream">
-            Learn it from <br />
-            <span className="text-red">someone who uses it.</span>
-          </h2>
-          <p className="mt-5 text-[16px] leading-relaxed text-fog">
-            Technique that works on pads is nice. Technique that works under pressure, against someone trying to hit you back, is the point. That's what you're buying.
-          </p>
-          <Link to="/book" className="btn btn-gold mt-8">
-            Start training <ArrowUpRight className="size-5" />
-          </Link>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
-/* ================================================================ HOW TO BOOK */
-function HowToBook() {
+/* ================================================================ TRAINING AT THE GYM */
+function TrainingBand() {
   return (
     <section className="bg-ink-2 py-20 hairline-t sm:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <Reveal>
-          <SectionHeading eyebrow="How it works" title="Booked in under a minute." align="center" />
+          <SectionHeading eyebrow={site.training.eyebrow} title={site.training.title} body={site.training.body} />
+        </Reveal>
+        <div className="mt-12 grid gap-6 md:grid-cols-2">
+          {site.training.photos.map((photo, i) => (
+            <Reveal key={photo.src} delay={i * 90} as="div">
+              <figure>
+                <picture>
+                  <source srcSet={`/images/${photo.src}.webp`} type="image/webp" />
+                  <img
+                    src={`/images/${photo.src}.jpg`}
+                    alt={photo.alt}
+                    className="aspect-[4/3] w-full rounded-2xl object-cover object-[50%_30%]"
+                    loading="lazy"
+                  />
+                </picture>
+                <figcaption className="mt-3 text-[14px] text-fog">{photo.caption}</figcaption>
+              </figure>
+            </Reveal>
+          ))}
+        </div>
+        <Reveal delay={120} className="mt-8">
+          <SessionVideos />
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/* ================================================================ HOW BOOKING WORKS */
+function HowToBook() {
+  return (
+    <section className="py-20 sm:py-28">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <Reveal>
+          <SectionHeading eyebrow={site.howToBook.eyebrow} title={site.howToBook.title} align="center" />
         </Reveal>
         <ol className="mt-12 grid gap-4 md:grid-cols-3">
-          {site.howToBook.map((s, i) => (
+          {site.howToBook.steps.map((s, i) => (
             <Reveal key={s.title} as="li" delay={i * 90} className="flex items-start gap-5 rounded-xl p-2">
               <span className="grid size-10 shrink-0 place-items-center rounded-full bg-red font-display text-[16px] font-700 text-white">
                 {i + 1}
@@ -310,23 +293,23 @@ function HowToBook() {
           <Link to="/book" className="btn btn-primary">
             Book a session <ArrowRight className="size-5" />
           </Link>
-          <p className="mt-3 text-[13px] text-mute">{site.bookingNotice}</p>
+          <p className="mt-3 text-[13px] text-mute">{site.howToBook.note}</p>
         </Reveal>
       </div>
     </section>
   );
 }
 
-/* ================================================================ FAQ */
+/* ================================================================ QUESTIONS */
 function Faq() {
   return (
-    <section id="faq" className="scroll-mt-20 py-20 sm:py-28">
+    <section id="questions" className="scroll-mt-20 bg-ink-2 py-20 hairline-t sm:py-28">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 lg:grid-cols-[1fr_1.4fr]">
         <Reveal>
-          <SectionHeading eyebrow="FAQ" title="Questions people ask before their first session." />
+          <SectionHeading eyebrow={site.faq.eyebrow} title={site.faq.title} />
         </Reveal>
         <Reveal delay={100} className="flex flex-col">
-          {site.faq.map((f) => (
+          {site.faq.items.map((f) => (
             <details key={f.q} className="group hairline-b py-1">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-4 text-[16px] font-semibold text-cream [&::-webkit-details-marker]:hidden">
                 {f.q}
@@ -346,16 +329,16 @@ function Faq() {
 /* ================================================================ FINAL CTA */
 function FinalCta() {
   return (
-    <section className="relative overflow-hidden bg-ink-2 py-20 hairline-t sm:py-24">
+    <section className="relative overflow-hidden py-20 hairline-t sm:py-24">
       <div className="pointer-events-none absolute -left-40 top-1/2 h-[420px] w-[420px] -translate-y-1/2 rounded-full bg-red/15 blur-3xl" aria-hidden />
       <div className="relative mx-auto flex max-w-6xl flex-col items-start gap-8 px-4 sm:px-6 md:flex-row md:items-center md:justify-between">
         <div className="max-w-xl">
-          <p className="eyebrow">First session</p>
-          <h2 className="display mt-3 text-[clamp(1.9rem,3.6vw,2.75rem)] text-cream">Ready when you are.</h2>
-          <p className="mt-3 text-[16px] text-fog">Pick a time that suits you. No payment online, no lock-in, and {site.coach} confirms personally.</p>
+          <p className="eyebrow">{site.finalCta.eyebrow}</p>
+          <h2 className="display mt-3 text-[clamp(1.9rem,3.6vw,2.75rem)] text-cream">{site.finalCta.title}</h2>
+          <p className="mt-3 text-[16px] text-fog">{site.finalCta.body}</p>
         </div>
         <Link to="/book" className="btn btn-primary">
-          Book your hour <ArrowRight className="size-5" />
+          Book a session <ArrowRight className="size-5" />
         </Link>
       </div>
     </section>
@@ -379,7 +362,7 @@ function MobileBookBar() {
       style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}
     >
       <Link to="/book" className="btn btn-primary w-full">
-        Book a session · $40
+        Book a session
       </Link>
     </div>
   );

@@ -46,9 +46,9 @@ const rootRoute = createRootRoute({
       <div>
         <p className="eyebrow">404</p>
         <h1 className="display mt-3 text-[40px]">Page not found</h1>
-        <p className="mt-3 text-fog">That page doesn't exist.</p>
+        <p className="mt-3 text-fog">That page does not exist.</p>
         <Link to="/" className="btn btn-primary mt-8">
-          Back to the gym
+          Go to home page
         </Link>
       </div>
     </main>

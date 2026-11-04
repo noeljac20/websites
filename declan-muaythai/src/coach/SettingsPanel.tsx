@@ -38,7 +38,7 @@ export function SettingsPanel({ settings, onSaved }: { settings: Settings; onSav
     <>
       <PageHeader title="Settings" sub="How the booking calendar behaves." />
       <form onSubmit={save} className="card grid max-w-2xl gap-5 p-5 sm:grid-cols-2 sm:p-7">
-        <Field id="st-loc" label="Location shown to clients" hint="Gym name and suburb. Sent with every confirmation.">
+        <Field id="st-loc" label="Location shown to clients" hint="Gym name and suburb. Shown to clients on the booking and confirmation pages.">
           <Input id="st-loc" value={f.location} onChange={(e) => up("location", e.target.value)} />
         </Field>
         <Field id="st-tz" label="Timezone">
@@ -59,7 +59,7 @@ export function SettingsPanel({ settings, onSaved }: { settings: Settings; onSav
             ))}
           </Select>
         </Field>
-        <Field id="st-buf" label="Gap between sessions" hint="Breathing room before and after each booking.">
+        <Field id="st-buf" label="Gap between sessions" hint="Time kept free before and after each booking.">
           <Select id="st-buf" value={String(f.buffer_min)} onChange={(e) => up("buffer_min", Number(e.target.value))}>
             {[0, 15, 30, 45, 60].map((m) => (
               <option key={m} value={m}>
@@ -68,7 +68,7 @@ export function SettingsPanel({ settings, onSaved }: { settings: Settings; onSav
             ))}
           </Select>
         </Field>
-        <Field id="st-notice" label="Minimum notice (hours)" hint="People can't book inside this window.">
+        <Field id="st-notice" label="Minimum notice (hours)" hint="Bookings cannot be made closer to the start time than this.">
           <Input id="st-notice" type="number" min={0} max={168} value={f.min_notice_hours} onChange={(e) => up("min_notice_hours", Number(e.target.value))} />
         </Field>
         <Field id="st-adv" label="How far ahead (days)" hint="How far into the future the calendar opens.">
@@ -77,7 +77,7 @@ export function SettingsPanel({ settings, onSaved }: { settings: Settings; onSav
         <label className="flex items-center justify-between rounded-md bg-ink-2 px-4 py-3 text-[14px] text-cream sm:col-span-2">
           <span>
             Auto-confirm new bookings
-            <span className="block text-[12px] text-mute">Off means requests wait for you to confirm them.</span>
+            <span className="block text-[12px] text-mute">When this is off, new requests wait for you to confirm them.</span>
           </span>
           <Switch checked={f.auto_confirm} onChange={(v) => up("auto_confirm", v)} label="Auto-confirm bookings" />
         </label>

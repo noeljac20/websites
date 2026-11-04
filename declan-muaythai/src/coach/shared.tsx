@@ -64,9 +64,9 @@ export function ContactLinks({ email, phone, name }: { email: string; phone?: st
 
 export function confirmationText(b: Booking, tz: string) {
   const first = b.client_name.split(" ")[0];
-  return `Hey ${first}, ${site.coach} here. You're confirmed for ${b.session_name} on ${fmtDateLong(b.starts_at, tz)}, ${fmtRange(b.starts_at, b.ends_at, tz)} at ${site.location}. Bring water and a towel, gloves are sorted. Manage it here: ${window.location.origin}/booking/${b.manage_token}`;
+  return `Hi ${first}, this is ${site.coach}. Your ${b.session_name} session is confirmed for ${fmtDateLong(b.starts_at, tz)}, ${fmtRange(b.starts_at, b.ends_at, tz)} at ${site.location}. Please arrive five minutes early, wear comfortable clothes and bring water. You can manage your booking here: ${window.location.origin}/booking/${b.manage_token}`;
 }
 
 export function experienceLabel(v: string | null) {
-  return v ? EXPERIENCE_LABEL[v] ?? v : "—";
+  return v ? EXPERIENCE_LABEL[v] ?? v : "Not given";
 }

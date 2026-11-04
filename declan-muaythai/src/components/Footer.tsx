@@ -1,7 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { Instagram, Mail, MapPin, Phone } from "lucide-react";
 import { Logo } from "./Logo";
+import { SECTION_LINKS } from "./Nav";
 import { site } from "@/lib/site";
+
+const footerLink = "inline-flex min-h-11 items-center hover:text-cream";
 
 export function Footer() {
   return (
@@ -10,7 +13,7 @@ export function Footer() {
         <div>
           <Logo />
           <p className="mt-4 max-w-sm text-[15px] text-fog">
-            Private Muay Thai coaching with an active fighter. Sixty minutes, one-on-one, built around you.
+            Private one-on-one Muay Thai coaching with Declan Woods at The Headhunters Gym, Melbourne, for adults and kids aged 7 and up.
           </p>
           <Link to="/book" className="btn btn-primary mt-6">
             Book a session
@@ -42,7 +45,7 @@ export function Footer() {
               <li className="flex items-center gap-2.5">
                 <Instagram className="size-4 text-mute" />
                 <a href={site.instagram} target="_blank" rel="noreferrer" className="hover:text-cream">
-                  Instagram
+                  {site.instagramHandle || "Instagram"}
                 </a>
               </li>
             )}
@@ -50,19 +53,26 @@ export function Footer() {
         </div>
         <div>
           <p className="label-caps mb-4">Site</p>
-          <ul className="flex flex-col gap-3 text-[15px] text-fog">
-            <li><a href="/#session" className="hover:text-cream">Training</a></li>
-            <li><a href="/#pricing" className="hover:text-cream">Pricing</a></li>
-            <li><a href="/#about" className="hover:text-cream">About Declan</a></li>
-            <li><a href="/#faq" className="hover:text-cream">FAQ</a></li>
-            <li><Link to="/book" className="hover:text-cream">Book</Link></li>
+          <ul className="flex flex-col gap-1 text-[15px] text-fog">
+            {SECTION_LINKS.map((l) => (
+              <li key={l.hash}>
+                <Link to="/" hash={l.hash} className={footerLink}>
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+            <li>
+              <Link to="/book" className={footerLink}>
+                Book a session
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
       <div className="hairline-t">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-5 text-[12px] text-mute sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <span>© {new Date().getFullYear()} {site.name}. All rights reserved.</span>
-          <Link to="/coach" className="hover:text-fog">
+          <Link to="/coach" className="inline-flex min-h-11 items-center hover:text-fog">
             Coach login
           </Link>
         </div>

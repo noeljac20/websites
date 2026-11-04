@@ -4,11 +4,12 @@ import { Menu, X } from "lucide-react";
 import { Logo } from "./Logo";
 import { cn } from "@/lib/utils";
 
-const links = [
-  { href: "/#session", label: "Training" },
-  { href: "/#pricing", label: "Pricing" },
-  { href: "/#about", label: "About" },
-  { href: "/#faq", label: "FAQ" },
+/** Section links go through the router so they work from /book and /booking without a full reload. */
+export const SECTION_LINKS = [
+  { hash: "sessions", label: "Sessions" },
+  { hash: "pricing", label: "Pricing" },
+  { hash: "about", label: "About" },
+  { hash: "questions", label: "Questions" },
 ];
 
 export function Nav({ solid = false }: { solid?: boolean }) {
@@ -44,10 +45,10 @@ export function Nav({ solid = false }: { solid?: boolean }) {
       <div className="mx-auto flex h-[68px] max-w-6xl items-center justify-between px-4 sm:px-6">
         <Logo />
         <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
-          {links.map((l) => (
-            <a key={l.href} href={l.href} className="label-caps text-[13px] text-fog transition-colors hover:text-cream">
+          {SECTION_LINKS.map((l) => (
+            <Link key={l.hash} to="/" hash={l.hash} className="label-caps inline-flex min-h-11 items-center text-[13px] text-fog transition-colors hover:text-cream">
               {l.label}
-            </a>
+            </Link>
           ))}
           <Link to="/book" className="btn btn-primary btn-sm">
             Book a session
@@ -69,22 +70,25 @@ export function Nav({ solid = false }: { solid?: boolean }) {
           </button>
         </div>
       </div>
-      {open && (
-        <div id="mobile-nav" className="hairline-t bg-ink/95 px-4 pb-8 pt-4 backdrop-blur-md md:hidden">
-          <ul className="flex flex-col">
-            {links.map((l, i) => (
-              <li key={l.href} className="animate-rise" style={{ animationDelay: `${i * 40}ms` }}>
-                <a href={l.href} className="display-md block py-4 text-[26px] text-cream hairline-b" onClick={() => setOpen(false)}>
-                  {l.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-          <Link to="/book" className="btn btn-primary mt-6 w-full" onClick={() => setOpen(false)}>
-            Book a session
-          </Link>
-        </div>
-      )}
+      {/* Always in the DOM (hidden when closed) so the menu button's aria-controls points at a real element. */}
+      <div id="mobile-nav" hidden={!open} className="hairline-t bg-ink/95 px-4 pb-8 pt-4 backdrop-blur-md md:hidden">
+        {open && (
+          <>
+            <ul className="flex flex-col">
+              {SECTION_LINKS.map((l, i) => (
+                <li key={l.hash} className="animate-rise" style={{ animationDelay: `${i * 40}ms` }}>
+                  <Link to="/" hash={l.hash} className="display-md block py-4 text-[24px] text-cream hairline-b" onClick={() => setOpen(false)}>
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <Link to="/book" className="btn btn-primary mt-6 w-full" onClick={() => setOpen(false)}>
+              Book a session
+            </Link>
+          </>
+        )}
+      </div>
     </header>
   );
 }

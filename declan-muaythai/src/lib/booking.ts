@@ -12,6 +12,7 @@ export type SessionType = {
   features: string[];
   is_active: boolean;
   is_featured: boolean;
+  for_kids: boolean;
   sort_order: number;
 };
 
@@ -98,25 +99,44 @@ export const DEFAULT_SETTINGS: Settings = {
   max_advance_days: 42,
   buffer_min: 0,
   auto_confirm: false,
-  location: "Melbourne, VIC",
+  location: "The Headhunters Gym, Melbourne",
 };
 
-/** Static fallback so the pricing section still renders if the database is unreachable. */
+/** Static fallback so the pricing section still renders if the database is unreachable. Mirrors the two real services. */
 export const FALLBACK_SESSION_TYPES: SessionType[] = [
   {
     id: "fallback-private",
     slug: "private-1on1",
-    name: "1:1 Private Session",
-    tagline: "The full hour, all on you.",
+    name: "1-on-1 Training",
+    tagline: "A one-hour session tailored to you.",
     description:
-      "One hour of undivided coaching. Pad work, technique breakdown and fight IQ built around your level and what you want out of Muay Thai.",
+      "A one-on-one session at The Headhunters Gym, tailored to your experience level and individual goals. Technique, pad work, fitness and building a strong foundation.",
     duration_min: 60,
     price_cents: 4000,
     sessions_included: 1,
-    features: ["Pad rounds built around you", "Technique breakdown on video", "Clinch, kicks, elbows, knees", "All levels, complete beginners welcome"],
+    features: ["Technique and pad work", "Fitness and conditioning", "Tailored to your level and goals", "Beginner and intermediate welcome"],
     is_active: true,
     is_featured: true,
+    for_kids: false,
     sort_order: 1,
+  },
+  {
+    id: "fallback-kids",
+    slug: "kids-training",
+    name: "Kids Training",
+    tagline: "A 45-minute session for ages 7 and up.",
+    description:
+      "A 45-minute one-on-one session for kids aged 7 and up, tailored to their level and goals. Technique, pad work and fitness built into a strong foundation.",
+    duration_min: 45,
+    price_cents: 3000,
+    sessions_included: 1,
+    // TODO: confirm kids supervision policy with Declan. The live DB row (migration 20261104220000) still carries the older
+    // description/features; update it via the coach Services tab or a follow-up migration, not by editing applied migrations.
+    features: ["Ages 7+", "45 minutes, one-on-one", "Technique, pad work and fitness", "Tailored to their level"],
+    is_active: true,
+    is_featured: false,
+    for_kids: true,
+    sort_order: 2,
   },
 ];
 

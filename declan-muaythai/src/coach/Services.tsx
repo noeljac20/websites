@@ -19,6 +19,7 @@ const BLANK: SessionType = {
   features: [],
   is_active: true,
   is_featured: false,
+  for_kids: false,
   sort_order: 10,
 };
 
@@ -39,7 +40,7 @@ export function Services() {
       />
       {types.loading && !types.data && (
         <div className="flex items-center gap-3 text-fog">
-          <Spinner /> Loading…
+          <Spinner /> Loading
         </div>
       )}
       <ul className="grid gap-3 md:grid-cols-2">
@@ -52,11 +53,12 @@ export function Services() {
               </div>
               <div className="flex flex-col items-end gap-1">
                 {t.is_featured && <Badge tone="gold">Featured</Badge>}
+                {t.for_kids && <Badge>Kids</Badge>}
                 {!t.is_active && <Badge>Hidden</Badge>}
               </div>
             </div>
             <p className="mt-4 display text-[28px] text-cream">
-              {fmtMoney(t.price_cents)} <span className="text-[14px] font-sans font-medium normal-case tracking-normal text-mute">· {t.duration_min} min{t.sessions_included > 1 ? ` × ${t.sessions_included}` : ""}</span>
+              {fmtMoney(t.price_cents)} <span className="text-[14px] font-sans font-medium normal-case tracking-normal text-mute">· {t.duration_min} min</span>
             </p>
             <Button size="sm" variant="soft" className="mt-4 self-start" onClick={() => setEditing(t)}>
               <Pencil className="size-4" /> Edit
@@ -109,10 +111,12 @@ function EditDialog({ initial, onClose, onSaved }: { initial: SessionType; onClo
         description: f.description || null,
         duration_min: Number(f.duration_min),
         price_cents: price,
-        sessions_included: Number(f.sessions_included),
+        // Packs are no longer offered; every service is a single session.
+        sessions_included: 1,
         features: f.featuresText.split("\n").map((s) => s.trim()).filter(Boolean),
         is_active: f.is_active,
         is_featured: f.is_featured,
+        for_kids: f.for_kids,
         sort_order: Number(f.sort_order),
       });
       toast.success(isNew ? "Service added." : "Service updated.");
@@ -145,9 +149,6 @@ function EditDialog({ initial, onClose, onSaved }: { initial: SessionType; onClo
             ))}
           </Select>
         </Field>
-        <Field id="sv-inc" label="Sessions included" hint="More than 1 makes it a pack.">
-          <Input id="sv-inc" type="number" min={1} max={50} value={f.sessions_included} onChange={(e) => up("sessions_included", Number(e.target.value))} />
-        </Field>
         <Field id="sv-sort" label="Order on site" hint="Lower shows first.">
           <Input id="sv-sort" type="number" value={f.sort_order} onChange={(e) => up("sort_order", Number(e.target.value))} />
         </Field>
@@ -165,7 +166,14 @@ function EditDialog({ initial, onClose, onSaved }: { initial: SessionType; onClo
           Visible on site <Switch checked={f.is_active} onChange={(v) => up("is_active", v)} label="Visible on site" />
         </label>
         <label className="flex items-center justify-between rounded-md bg-ink-2 px-4 py-3 text-[14px] text-cream">
-          Highlight as popular <Switch checked={f.is_featured} onChange={(v) => up("is_featured", v)} label="Featured" />
+          Highlight on site <Switch checked={f.is_featured} onChange={(v) => up("is_featured", v)} label="Featured" />
+        </label>
+        <label className="flex items-center justify-between rounded-md bg-ink-2 px-4 py-3 text-[14px] text-cream sm:col-span-2">
+          <span>
+            Kids session (ages 7+)
+            <span className="block text-[12px] font-normal text-mute">A parent or guardian makes the booking and brings the child to the gym. The form asks for the child's name and age.</span>
+          </span>
+          <Switch checked={f.for_kids} onChange={(v) => up("for_kids", v)} label="Kids session" />
         </label>
         <div className="flex justify-end gap-3 sm:col-span-2">
           <Button type="button" variant="ghost" onClick={onClose}>

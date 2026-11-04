@@ -29,7 +29,7 @@ export function Overview({ settings, onGo }: { settings: Settings; onGo: (tab: s
   if (bookings.loading && !bookings.data) {
     return (
       <div className="flex items-center gap-3 text-fog">
-        <Spinner /> Loading…
+        <Spinner /> Loading
       </div>
     );
   }
@@ -58,7 +58,7 @@ export function Overview({ settings, onGo }: { settings: Settings; onGo: (tab: s
       {stats.pending.length > 0 && (
         <section className="mt-8">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="display-md text-[19px] text-cream">Needs a reply</h2>
+            <h2 className="display-md text-[19px] text-cream">Awaiting your confirmation</h2>
             <Button variant="ghost" size="sm" onClick={() => onGo("schedule")}>
               All bookings <ArrowRight className="size-4" />
             </Button>
@@ -74,7 +74,7 @@ export function Overview({ settings, onGo }: { settings: Settings; onGo: (tab: s
       <section className="mt-8">
         <h2 className="display-md mb-3 text-[19px] text-cream">Today's sessions</h2>
         {stats.todays.length === 0 ? (
-          <EmptyState title="Nothing booked today" body="Enjoy the rest day, or add a walk-in from the Schedule tab." action={<Button variant="soft" size="sm" onClick={() => onGo("schedule")}>Open schedule</Button>} />
+          <EmptyState title="Nothing booked today." body="If someone books with you directly, add it from the Schedule tab so the time is held." action={<Button variant="soft" size="sm" onClick={() => onGo("schedule")}>Open schedule</Button>} />
         ) : (
           <ul className="flex flex-col gap-2">
             {stats.todays.map((b: Booking) => (

@@ -18,7 +18,7 @@ export function CoachLoginPage() {
   const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
-    document.title = `Coach login — ${site.name}`;
+    document.title = `Coach sign in | ${site.name}`;
     supabase.rpc("mt_coach_exists").then(({ data }) => setCoachExists(Boolean(data)));
   }, []);
 
@@ -37,7 +37,7 @@ export function CoachLoginPage() {
         const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
         if (!data.session) {
-          setNotice("Account created. Check your email to confirm it, then sign in here.");
+          setNotice("Your account has been created. Check your email to confirm it, then sign in here.");
           setCoachExists(null);
           return;
         }
@@ -49,11 +49,11 @@ export function CoachLoginPage() {
       const { data: isCoach } = await supabase.rpc("mt_claim_coach");
       if (!isCoach) {
         await supabase.auth.signOut();
-        throw new Error("That account isn't registered as the coach.");
+        throw new Error("This account is not registered as the coach.");
       }
       void navigate({ to: "/coach" });
     } catch (err) {
-      toast.error(errorMessage(err, "Couldn't sign in."));
+      toast.error(errorMessage(err, "Sign in did not work. Please check your email and password."));
     } finally {
       setBusy(false);
     }
@@ -68,12 +68,12 @@ export function CoachLoginPage() {
         <form onSubmit={submit} className="card flex flex-col gap-5 p-6 sm:p-8">
           <div>
             <p className="eyebrow">Coach area</p>
-            <h1 className="display mt-2 text-[28px] text-cream">{setupMode ? "Set up your login" : "Sign in"}</h1>
-            {setupMode && (
-              <p className="mt-2 text-[14px] text-fog">
-                No coach account exists yet. The first account created here becomes the coach.
-              </p>
-            )}
+            <h1 className="display mt-2 text-[28px] text-cream">{setupMode ? "Set up the coach account" : "Coach sign in"}</h1>
+            <p className="mt-2 text-[14px] text-fog">
+              {setupMode
+                ? "No coach account exists yet. The first account created here becomes the coach account."
+                : "Sign in to manage bookings, availability and services."}
+            </p>
           </div>
           {notice && (
             <p className="rounded-md bg-green-soft p-3 text-[14px] text-green" role="status">
@@ -83,7 +83,7 @@ export function CoachLoginPage() {
           <Field id="email" label="Email">
             <Input id="email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
           </Field>
-          <Field id="password" label="Password" hint={setupMode ? "At least 8 characters." : undefined}>
+          <Field id="password" label="Password" hint={setupMode ? "Use at least 8 characters." : undefined}>
             <Input
               id="password"
               type="password"
@@ -98,7 +98,7 @@ export function CoachLoginPage() {
             {setupMode ? "Create coach account" : "Sign in"}
           </Button>
           <Link to="/" className="text-center text-[13px] text-mute hover:text-fog">
-            Back to site
+            Back to home
           </Link>
         </form>
       </div>
