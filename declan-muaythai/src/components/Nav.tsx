@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 /** Section links go through the router so they work from /book and /booking without a full reload. */
 export const SECTION_LINKS = [
-  { hash: "sessions", label: "Sessions" },
+  { hash: "muay-thai", label: "Muay Thai" },
   { hash: "pricing", label: "Pricing" },
   { hash: "about", label: "About" },
   { hash: "questions", label: "Questions" },

@@ -234,7 +234,7 @@ export function SectionHeading({
   return (
     <div className={cn("max-w-2xl", align === "center" && "mx-auto text-center", className)}>
       {eyebrow && <p className="eyebrow mb-3">{eyebrow}</p>}
-      <h2 className="display text-[clamp(1.85rem,3.4vw,2.6rem)] text-cream">{title}</h2>
+      <h2 className="display text-[clamp(1.6rem,2.8vw,2.1rem)] text-cream">{title}</h2>
       {body && <p className="mt-3 text-[16px] leading-relaxed text-fog">{body}</p>}
     </div>
   );

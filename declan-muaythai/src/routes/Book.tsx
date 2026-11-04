@@ -121,8 +121,7 @@ export function BookPage() {
 
         {loadError && (
           <div className="card-2 border-red/40 p-5 text-[15px] text-fog" role="alert">
-            {loadError} If this keeps happening, message {site.coach} on Instagram ({site.instagramHandle})
-            {site.email ? ` or email ${site.email}` : ""}.
+            {loadError} Message {site.instagramHandle} on Instagram.
           </div>
         )}
 
@@ -235,7 +234,7 @@ function ChooseType({ types, selected, onSelect }: { types: SessionType[]; selec
   return (
     <div>
       <p className="mb-5 max-w-2xl text-[15px] leading-relaxed text-fog">
-        Every session is one-on-one with {site.coach} at {site.gym}. Kids sessions are booked by a parent or guardian. Nothing is paid online.
+        All sessions are 1-on-1 at {site.gym}. Nothing is paid online.
       </p>
       <div className="grid gap-4 md:grid-cols-2">
         {types.map((t, i) => (
@@ -457,8 +456,7 @@ function ChooseTime({
             )}
             {slots && slots.length === 0 && (
               <p className="mt-3 text-[14px] text-fog">
-                There are no open times in the next {settings.max_advance_days} days. Message {site.coach} on Instagram ({site.instagramHandle})
-                and he will help you find a time.
+                No open times in the next {settings.max_advance_days} days. Message {site.instagramHandle} on Instagram.
               </p>
             )}
           </div>
@@ -688,7 +686,7 @@ function Details({
         {forKids && (
           // TODO: confirm kids supervision policy with Declan
           <p className="text-[15px] leading-relaxed text-fog">
-            Enter your own details first, then your child's. A parent or guardian makes the booking and brings the child to the gym.
+            Your details first, then your child's.
           </p>
         )}
 
@@ -704,7 +702,7 @@ function Details({
               placeholder={forKids ? "Your name" : "First and last name"}
             />
           </Field>
-          <Field id="f-phone" label="Mobile" error={errors.phone} optional hint={`So ${site.coach} can text you if anything changes.`}>
+          <Field id="f-phone" label="Mobile" error={errors.phone} optional hint="For updates about this booking.">
             <Input
               id="f-phone"
               type="tel"
@@ -718,7 +716,7 @@ function Details({
             />
           </Field>
           {/* TODO: no confirmation email is sent yet. Once email sending is set up, update this hint to say the confirmation goes here. */}
-          <Field id="f-email" label="Email" error={errors.email} hint={`So ${site.coach} can reach you about this booking.`}>
+          <Field id="f-email" label="Email" error={errors.email} hint="For updates about this booking.">
             <Input
               id="f-email"
               type="email"
@@ -731,7 +729,7 @@ function Details({
               placeholder="you@example.com"
             />
           </Field>
-          <Field id="f-experience" label={forKids ? "Your child's experience" : "Your experience"} error={errors.experience} hint="Complete beginners are welcome.">
+          <Field id="f-experience" label={forKids ? "Your child's experience" : "Your experience"} error={errors.experience} hint={undefined}>
             <Select
               id="f-experience"
               value={form.experience}
@@ -780,7 +778,7 @@ function Details({
           id="f-goals"
           label={forKids ? "What would you like your child to get out of training?" : "What would you like to get out of training?"}
           optional
-          hint={forKids ? "For example confidence, fitness or learning the basics." : "For example fitness, technique or confidence."}
+          hint="For example fitness, technique or confidence."
         >
           <Textarea id="f-goals" value={form.goals} onChange={set("goals")} aria-describedby="f-goals-hint" maxLength={1000} />
         </Field>
@@ -788,11 +786,7 @@ function Details({
           id="f-notes"
           label="Anything else"
           optional
-          hint={
-            forKids
-              ? `Injuries, allergies, questions, or anything ${site.coach} should know before the session.`
-              : `Injuries, questions, or anything ${site.coach} should know before the session.`
-          }
+          hint={`Injuries or anything ${site.coach} should know.`}
         >
           <Textarea id="f-notes" value={form.notes} onChange={set("notes")} aria-describedby="f-notes-hint" className="min-h-[80px]" maxLength={1000} />
         </Field>
@@ -806,7 +800,7 @@ function Details({
           </Button>
         </div>
         <p className="text-[13px] leading-relaxed text-mute">
-          Nothing is paid online. {site.bookingNotice} {site.cancelNote}
+          {site.paymentNote} {site.cancelNote}
         </p>
       </form>
 
@@ -821,7 +815,7 @@ function Details({
           <SummaryRow label="Where" value={location} />
           <SummaryRow label="Price" value={<span className="display-md text-[22px]">{fmtMoney(type.price_cents)}</span>} last />
         </dl>
-        <p className="mt-4 text-[13px] text-mute">Payment is arranged directly with {site.coach}.</p>
+        <p className="mt-4 text-[13px] text-mute">Payment is arranged with {site.coach}.</p>
       </aside>
     </div>
   );
@@ -890,8 +884,8 @@ function Confirmation({
           </h1>
           <p className="mt-4 text-[16px] leading-relaxed text-fog">
             {confirmed
-              ? "Your session is booked. Save the manage link below so you can check or cancel this booking later."
-              : `${site.coach} will confirm your request personally. Save the manage link below so you can check or cancel this booking later.`}
+              ? "Your session is booked. Save the manage link below to check or cancel it later."
+              : `${site.coach} will confirm your request. Save the manage link below to check or cancel it later.`}
           </p>
 
           <dl className="mt-8 grid gap-4 rounded-xl bg-ink-2 p-5 sm:grid-cols-2">
@@ -951,18 +945,7 @@ function Confirmation({
             </Link>
           </div>
 
-          <div className="mt-8 rounded-xl border border-line p-5 text-[14px] text-fog">
-            <h2 className="font-semibold text-cream">Before your session</h2>
-            <ul className="mt-2 list-disc pl-5">
-              <li>Arrive five minutes early so the full {booking.duration_min} minutes can be used.</li>
-              <li>Wear comfortable training clothes and bring water and a towel.</li>
-              {forKids && (
-                // TODO: confirm kids supervision policy with Declan
-                <li>A parent or guardian brings your child to the gym and makes any changes to the booking.</li>
-              )}
-              <li>If you need to cancel, use the manage link above with as much notice as you can so someone else can use the time.</li>
-            </ul>
-          </div>
+          <p className="mt-8 text-[14px] text-fog">To cancel, use the manage link above.</p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link to="/" className="btn btn-ghost">

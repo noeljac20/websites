@@ -44,11 +44,11 @@ export function ManageBookingPage() {
   const cancellable = booking && upcoming && (booking.status === "pending" || booking.status === "confirmed");
 
   const statusSentence: Record<PublicBooking["status"], string> = {
-    pending: `${site.coach} has your request and will confirm it personally.`,
+    pending: `${site.coach} has your request and will confirm it.`,
     confirmed: `Your session is confirmed. ${site.coach} will see you at ${site.gym}.`,
-    cancelled: "This booking has been cancelled. You are welcome to book another time below.",
-    completed: "This session has taken place. You can book your next one below.",
-    no_show: `This booking was marked as a no-show. If that is not right, message ${site.coach} on Instagram (${site.instagramHandle}).`,
+    cancelled: "This booking has been cancelled.",
+    completed: "This session has taken place.",
+    no_show: `This booking was marked as a no-show. If that is not right, message ${site.instagramHandle} on Instagram.`,
   };
 
   return (
@@ -63,7 +63,7 @@ export function ManageBookingPage() {
         {booking === null && (
           <div className="card p-8 text-center">
             <h1 className="display text-[30px] text-cream">Booking not found</h1>
-            <p className="mt-3 text-fog">This link does not match a booking. Please check the manage link from your confirmation page.</p>
+            <p className="mt-3 text-fog">This link does not match a booking. Check the link from your confirmation page.</p>
             <Link to="/book" className="btn btn-primary mt-6">
               Book a session
             </Link>
@@ -154,8 +154,7 @@ export function ManageBookingPage() {
             </div>
             {cancellable && (
               <p className="mt-4 text-[13px] leading-relaxed text-mute">
-                Need a different time? Cancel this booking and book a new one, or message {site.coach} on Instagram ({site.instagramHandle})
-                {site.email ? ` or email ${site.email}` : ""}. Please give as much notice as you can so someone else can use the time.
+                To change the time, cancel and rebook, or message {site.instagramHandle} on Instagram.
               </p>
             )}
           </div>
@@ -167,7 +166,7 @@ export function ManageBookingPage() {
         open={confirmOpen}
         onOpenChange={setConfirmOpen}
         title="Cancel this booking?"
-        description="The time will be released for someone else. You can book again at any time."
+        description="The time will be released. You can book again at any time."
       >
         <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button variant="ghost" onClick={() => setConfirmOpen(false)}>

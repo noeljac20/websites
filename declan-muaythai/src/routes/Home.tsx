@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 
 export function HomePage() {
   useEffect(() => {
-    document.title = `${site.name}: private Muay Thai coaching in Melbourne`;
+    document.title = `${site.name}: Muay Thai coaching in Melbourne`;
   }, []);
   return (
     // Bottom padding on phones matches the fixed book bar so it never covers the last footer row (Coach login).
@@ -21,7 +21,7 @@ export function HomePage() {
       <Nav />
       <main>
         <Hero />
-        <SessionSection />
+        <SportSection />
         <Pricing />
         <About />
         <TrainingBand />
@@ -56,7 +56,7 @@ function Hero() {
           <p className="eyebrow animate-rise mb-5 flex items-center gap-3">
             <span className="h-px w-8 bg-gold" /> {site.hero.eyebrow}
           </p>
-          <h1 className="display animate-rise text-[clamp(2.4rem,5.5vw,4.2rem)] text-cream [animation-delay:80ms]">
+          <h1 className="display animate-rise text-[clamp(2rem,4.2vw,3.3rem)] text-cream [animation-delay:80ms]">
             {site.hero.headline.map((line, i) => (
               <span key={line} className="sm:block">
                 {i > 0 ? " " : ""}
@@ -64,7 +64,7 @@ function Hero() {
               </span>
             ))}
           </h1>
-          <p className="animate-rise mt-6 max-w-xl text-[16px] leading-relaxed text-fog [animation-delay:160ms] sm:text-[17px]">
+          <p className="animate-rise mt-5 max-w-lg text-[16px] leading-relaxed text-fog [animation-delay:160ms]">
             {site.hero.sub}
           </p>
           <div className="animate-rise mt-8 flex flex-col gap-3 sm:flex-row sm:items-center [animation-delay:240ms]">
@@ -81,7 +81,7 @@ function Hero() {
                 rel="noreferrer"
                 className="inline-flex min-h-12 items-center gap-1.5 px-1 text-[15px] font-semibold text-fog transition-colors hover:text-cream"
               >
-                Message on Instagram <ArrowUpRight className="size-4" />
+                Instagram <ArrowUpRight className="size-4" />
               </a>
             )}
           </div>
@@ -92,7 +92,7 @@ function Hero() {
           )}
         </div>
 
-        <dl className="animate-rise mt-12 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-4 [animation-delay:320ms]">
+        <dl className="animate-rise mt-12 grid grid-cols-2 gap-px overflow-hidden max-w-md rounded-xl border border-line bg-line [animation-delay:320ms]">
           {site.stats.map((s) => (
             <div key={s.label} className="flex flex-col bg-ink/70 px-5 py-4 backdrop-blur-sm">
               <dt className="order-2 label-caps">{s.label}</dt>
@@ -105,24 +105,22 @@ function Hero() {
   );
 }
 
-/* ================================================================ SESSIONS */
-function SessionSection() {
+/* ================================================================ THE SPORT */
+function SportSection() {
   return (
-    <section id="sessions" className="scroll-mt-20 py-20 sm:py-28">
+    <section id="muay-thai" className="scroll-mt-20 py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <Reveal>
-          <SectionHeading eyebrow={site.session.eyebrow} title={site.session.title} body={site.session.intro} />
+          <SectionHeading eyebrow={site.sport.eyebrow} title={site.sport.title} />
         </Reveal>
-        <ol className="mt-12 grid gap-4 md:grid-cols-3">
-          {site.session.steps.map((s, i) => (
-            <Reveal key={s.n} as="li" delay={i * 90} className="card group relative overflow-hidden p-7">
-              <span className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,var(--color-red),transparent)] opacity-0 transition-opacity group-hover:opacity-100" />
-              <p className="eyebrow">{s.n}</p>
-              <h3 className="display-md mt-3 text-[22px] text-cream">{s.title}</h3>
+        <div className="mt-12 grid gap-4 md:grid-cols-2">
+          {site.sport.items.map((s, i) => (
+            <Reveal key={s.title} delay={i * 90} className="card p-7">
+              <h3 className="display-md text-[22px] text-cream">{s.title}</h3>
               <p className="mt-3 text-[15px] leading-relaxed text-fog">{s.body}</p>
             </Reveal>
           ))}
-        </ol>
+        </div>
       </div>
     </section>
   );
@@ -143,7 +141,7 @@ function Pricing() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <Reveal className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <SectionHeading eyebrow={site.pricing.eyebrow} title={site.pricing.title} body={site.pricing.intro} />
-          <p className="shrink-0 text-[13px] text-mute md:text-right">{site.pricing.note}</p>
+          {site.pricing.note && <p className="shrink-0 text-[13px] text-mute md:text-right">{site.pricing.note}</p>}
         </Reveal>
 
         <div className="mx-auto mt-12 grid max-w-3xl gap-4 md:grid-cols-2">
@@ -164,7 +162,7 @@ function Pricing() {
                 <Clock className="size-5 shrink-0 text-mute" aria-hidden />
               </div>
               <div className="mt-6 flex items-end gap-2">
-                <span className="display text-[38px] text-cream">{fmtMoney(t.price_cents)}</span>
+                <span className="display text-[34px] text-cream">{fmtMoney(t.price_cents)}</span>
                 <span className="mb-2 text-[13px] text-mute">{t.duration_min} minutes</span>
               </div>
               <ul className="mt-6 flex flex-col gap-2.5 text-[14px] text-fog">
@@ -221,7 +219,7 @@ function About() {
               <p key={p}>{p}</p>
             ))}
           </div>
-          <ul className="mt-8 grid gap-3 sm:grid-cols-2">
+          <ul className={cn("mt-8 grid gap-3 sm:grid-cols-2", site.about.highlights.length === 0 && "hidden")}>
             {site.about.highlights.map((h) => (
               <li key={h} className="card-2 flex items-center gap-3 px-4 py-3 text-[14px] text-cream">
                 <span className="size-1.5 shrink-0 rounded-full bg-red" /> {h}
@@ -240,27 +238,26 @@ function TrainingBand() {
     <section className="bg-ink-2 py-20 hairline-t sm:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <Reveal>
-          <SectionHeading eyebrow={site.training.eyebrow} title={site.training.title} body={site.training.body} />
+          <SectionHeading eyebrow={site.training.eyebrow} title={site.training.title} body={site.training.body || undefined} />
         </Reveal>
         <div className="mt-12 grid gap-6 md:grid-cols-2">
           {site.training.photos.map((photo, i) => (
             <Reveal key={photo.src} delay={i * 90} as="div">
-              <figure>
+              <figure className="overflow-hidden rounded-2xl">
                 <picture>
                   <source srcSet={`/images/${photo.src}.webp`} type="image/webp" />
                   <img
                     src={`/images/${photo.src}.jpg`}
                     alt={photo.alt}
-                    className="aspect-[4/3] w-full rounded-2xl object-cover object-[50%_30%]"
+                    className="aspect-[4/3] w-full object-cover object-[50%_30%] transition-transform duration-500 hover:scale-[1.02]"
                     loading="lazy"
                   />
                 </picture>
-                <figcaption className="mt-3 text-[14px] text-fog">{photo.caption}</figcaption>
               </figure>
             </Reveal>
           ))}
         </div>
-        <Reveal delay={120} className="mt-8">
+        <Reveal delay={120} className="mt-6">
           <SessionVideos />
         </Reveal>
       </div>
@@ -334,8 +331,8 @@ function FinalCta() {
       <div className="relative mx-auto flex max-w-6xl flex-col items-start gap-8 px-4 sm:px-6 md:flex-row md:items-center md:justify-between">
         <div className="max-w-xl">
           <p className="eyebrow">{site.finalCta.eyebrow}</p>
-          <h2 className="display mt-3 text-[clamp(1.9rem,3.6vw,2.75rem)] text-cream">{site.finalCta.title}</h2>
-          <p className="mt-3 text-[16px] text-fog">{site.finalCta.body}</p>
+          <h2 className="display mt-3 text-[clamp(1.6rem,2.8vw,2.1rem)] text-cream">{site.finalCta.title}</h2>
+          {site.finalCta.body && <p className="mt-3 text-[16px] text-fog">{site.finalCta.body}</p>}
         </div>
         <Link to="/book" className="btn btn-primary">
           Book a session <ArrowRight className="size-5" />

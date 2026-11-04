@@ -2,7 +2,7 @@
 
 Private Muay Thai coaching site with online bookings and a coach dashboard.
 
-- **Public site** (`/`): hero, what a session includes, pricing (live from the database), about Declan, a two-photo band about training at The Headhunters Gym (win photo and team photo with his coach and training partners), two short training clips (pad work and a kids session; muted autoplay with a sound toggle, playing only while in view), how booking works, common questions.
+- **Public site** (`/`): hero, a short explanation of Muay Thai and kickboxing, pricing (live from the database), about Declan, a two-photo band about training at The Headhunters Gym (win photo and team photo with his coach and training partners), two short training clips (pad work and a kids session; muted autoplay with a sound toggle, playing only while in view), how booking works, common questions.
 - **Booking** (`/book`): pick a session, then a date and time from live availability, then details, then confirmation with calendar links and a manage link.
 - **Manage booking** (`/booking/:token`): clients can view and cancel their own booking from the manage link shown on their confirmation page.
 - **Coach dashboard** (`/coach`): today's overview, schedule (confirm / complete / no-show / cancel, private session notes, add walk-ins), clients with history and notes, weekly availability and days off, services and prices, booking settings.
@@ -47,14 +47,12 @@ Bookings and client records are only readable by the coach account.
 
 - The kids clip in `public/videos/session-kids.mp4` shows a child. Confirm with Declan that the parent or guardian is happy for it to be on the site before launch.
 
-Editable copy lives in `src/lib/site.ts`. Facts taken from Declan's Instagram post (@declan_woodss, https://instagram.com/declan_woodss) are already in: The Headhunters Gym, $40 / 1 hour 1-on-1, $30 / 45 min kids (ages 7+), beginner and intermediate welcome, limited spots. The copy is written to be plain and professional: sentence case, no exclamation marks, and no quotations or testimonials anywhere on the site (keep it that way when editing). Items marked `TODO` still need Declan's input:
+Editable copy lives in `src/lib/site.ts`. Facts taken from Declan's Instagram post (@declan.woods, https://instagram.com/declan.woods) are already in: The Headhunters Gym, $40 / 1 hour 1-on-1, $30 / 45 min kids (ages 7+), beginner and intermediate welcome, limited spots. The copy is written to be plain and professional: sentence case, no exclamation marks, and no quotations or testimonials anywhere on the site (keep it that way when editing). Items marked `TODO` still need Declan's input:
 
 - contact email and phone
 - the gym's suburb / street address (only "The Headhunters Gym, Melbourne" is known)
 - the exact wording of the 2026 championship title and division
 - how he prefers to be paid (the site only says nothing is paid online and payment is arranged directly with Declan)
-- what equipment is available (the site does not claim gloves or wraps are provided)
-- the session structure described under "What a session includes"
 
 ## Deploy
 

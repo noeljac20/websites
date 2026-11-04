@@ -1,4 +1,4 @@
--- Align services with Declan's actual offer (Instagram @declan_woodss):
+-- Align services with Declan's actual offer (Instagram @declan.woods):
 --   1-on-1 Training — $40 (1 hour); Kids Training (Ages 7+) — $30 (45 mins); at The Headhunters Gym.
 
 alter table public.mt_session_types add column if not exists for_kids boolean not null default false;

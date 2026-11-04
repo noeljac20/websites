@@ -6,7 +6,6 @@ type Clip = {
   src: string;
   poster: string;
   title: string;
-  caption: string;
   label: string;
 };
 
@@ -15,14 +14,12 @@ export const SESSION_CLIPS: Clip[] = [
     src: "/videos/session-pads.mp4",
     poster: "/videos/session-pads-poster.jpg",
     title: "Pad work",
-    caption: "Declan on the pads with his coach in the ring at The Headhunters Gym.",
     label: "Declan doing pad work with his coach in a boxing ring",
   },
   {
     src: "/videos/session-kids.mp4",
     poster: "/videos/session-kids-poster.jpg",
     title: "Kids session",
-    caption: "A kids session. Stance, guard and pad work at a pace that suits the child.",
     label: "Declan coaching a child on the pads in the gym",
   },
 ];
@@ -117,10 +114,6 @@ function VideoCard({ clip }: { clip: Clip }) {
           </button>
         </div>
       </div>
-      <figcaption className="px-4 py-3">
-        <p className="text-[15px] font-semibold text-cream">{clip.title}</p>
-        <p className="mt-0.5 text-[13px] leading-snug text-fog">{clip.caption}</p>
-      </figcaption>
     </figure>
   );
 }

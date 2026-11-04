@@ -71,7 +71,7 @@ export function CoachLoginPage() {
             <h1 className="display mt-2 text-[28px] text-cream">{setupMode ? "Set up the coach account" : "Coach sign in"}</h1>
             <p className="mt-2 text-[14px] text-fog">
               {setupMode
-                ? "No coach account exists yet. The first account created here becomes the coach account."
+                ? "The first account created here becomes the coach account."
                 : "Sign in to manage bookings, availability and services."}
             </p>
           </div>
