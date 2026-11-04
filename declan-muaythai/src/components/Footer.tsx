@@ -16,9 +16,6 @@ export function Footer() {
           <p className="mt-4 max-w-sm text-[15px] text-fog">
             1-on-1 Muay Thai and kickboxing coaching with Declan Woods at The Headhunters Gym, Pakenham.
           </p>
-          <Link to="/book" className="btn btn-primary mt-6">
-            Book a session
-          </Link>
         </div>
         <div>
           <p className="label-caps mb-4">Contact</p>

@@ -314,10 +314,7 @@ function HowToBook() {
           ))}
         </ol>
         <Reveal className="mt-10 text-center">
-          <Link to="/book" className="btn btn-primary">
-            Book a session <ArrowRight className="size-5" />
-          </Link>
-          <p className="mt-3 text-[13px] text-mute">{site.howToBook.note}</p>
+          <p className="text-[13px] text-mute">{site.howToBook.note}</p>
         </Reveal>
       </div>
     </section>
