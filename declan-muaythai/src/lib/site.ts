@@ -15,8 +15,8 @@ export const site = {
   location: "The Headhunters Gym, Pakenham",
   email: "", // Not shown. Instagram is the contact channel.
   phone: "", // TODO: e.g. "+61 4xx xxx xxx" to enable a tap-to-call link
-  instagram: "https://instagram.com/declan.woods",
-  instagramHandle: "@declan.woods",
+  instagram: "https://instagram.com/declan_woodss",
+  instagramHandle: "@declan_woodss",
   /** Declan's post says spots are limited; set to false to hide the notice. */
   limitedSpots: false, // TODO: set to true if Declan wants the notice shown
   limitedSpotsText: "Limited spots available.",
@@ -48,7 +48,7 @@ export const site = {
       "Sessions focus on improving technique, pad work, fitness and building a strong foundation.",
       "Whether you're completely new or looking to sharpen your skills, all beginner and intermediate levels are welcome!",
       "1-on-1 Training: $40 (1 hour). Kids Training (Ages 7+): $30 (45 mins).",
-      "DM me @declan.woods to book a session or for any questions! Limited spots available.",
+      "DM me @declan_woodss to book a session or for any questions! Limited spots available.",
     ],
     highlights: [] as string[],
     podiumCaption: "Muay Thai Australia National Championships, 2026", // TODO: confirm wording
@@ -110,7 +110,7 @@ export const site = {
       { q: "How do I pay?", a: "Nothing is paid online. Payment is arranged with Declan." }, // TODO: confirm payment method
       { q: "What if I need to cancel?", a: "Use the manage link on your confirmation page. Give as much notice as you can." },
       { q: "Do you train kids?", a: "Yes. Ages 7 and up, 45 minutes, $30. A parent or guardian makes the booking." }, // TODO: confirm kids policy
-      { q: "Can I book through Instagram instead?", a: "Yes. Message @declan.woods." },
+      { q: "Can I book through Instagram instead?", a: "Yes. Message @declan_woodss." },
     ],
   },
   finalCta: {

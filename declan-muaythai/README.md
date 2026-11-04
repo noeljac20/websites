@@ -47,7 +47,7 @@ Bookings and client records are only readable by the coach account.
 
 - The kids clip in `public/videos/session-kids.mp4` shows a child. Confirm with Declan that the parent or guardian is happy for it to be on the site before launch.
 
-Editable copy lives in `src/lib/site.ts`. Facts taken from Declan's Instagram post (@declan.woods, https://instagram.com/declan.woods) are already in: The Headhunters Gym, $40 / 1 hour 1-on-1, $30 / 45 min kids (ages 7+), beginner and intermediate welcome, limited spots. The copy is written to be plain and professional: sentence case, no exclamation marks, and no quotations or testimonials anywhere on the site (keep it that way when editing). Items marked `TODO` still need Declan's input:
+Editable copy lives in `src/lib/site.ts`. Facts taken from Declan's Instagram post (@declan_woodss, https://instagram.com/declan_woodss) are already in: The Headhunters Gym, $40 / 1 hour 1-on-1, $30 / 45 min kids (ages 7+), beginner and intermediate welcome, limited spots. The copy is written to be plain and professional: sentence case, no exclamation marks, and no quotations or testimonials anywhere on the site (keep it that way when editing). Items marked `TODO` still need Declan's input:
 
 - contact email and phone
 - the gym's street address (only "The Headhunters Gym, Pakenham" is known)
